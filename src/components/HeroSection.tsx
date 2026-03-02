@@ -1,4 +1,4 @@
-import heroBg from '@/assets/sala-bamboo-carbon.png';
+import heroBg from '@/assets/hero-bg.png';
 
 const HeroSection = () => {
   return (
