@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { products, categoryLabels, type Product, type ProductCategory } from '@/data/products';
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
-import catalogBanner from '@/assets/catalogo-cores.png';
 
 const categories: (ProductCategory | 'all')[] = ['all', 'ripado-madeira', 'ripado-colors', 'bamboo-carbon', 'wpc-externo'];
 
@@ -16,7 +15,7 @@ const CatalogSection = () => {
     <section id="catalogo" className="py-20 px-6 max-w-7xl mx-auto">
       {/* Banner */}
       <div className="relative rounded-2xl overflow-hidden mb-12 h-48 md:h-64">
-        <img src={catalogBanner} alt="Catálogo ELEVARE" className="w-full h-full object-cover" />
+        <img src="/images/catalogo-cores.png" alt="Catálogo ELEVARE" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent flex items-center px-8">
           <div>
             <div className="gold-line mb-4" />
