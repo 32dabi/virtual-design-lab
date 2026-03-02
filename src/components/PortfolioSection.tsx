@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 
 const PortfolioSection = () => {
   const [filter, setFilter] = useState('all');
+  const [selectedScene, setSelectedScene] = useState<typeof roomScenes[0] | null>(null);
   const filtered = filter === 'all' ? roomScenes : roomScenes.filter(s => s.roomType === filter);
 
   return (
