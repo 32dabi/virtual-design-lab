@@ -41,13 +41,13 @@ const SimulatorSection = () => {
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Room Preview */}
-        <div className="relative rounded-2xl overflow-hidden aspect-video bg-muted">
+        <div className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-[16/10] bg-muted">
           {scenesForRoom.map(scene => (
             <img
               key={scene.id}
               src={scene.image}
               alt={`${scene.roomName} com ${scene.productName}`}
-              className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+              className="absolute inset-0 w-full h-full object-contain transition-opacity duration-700"
               style={{ opacity: currentScene?.id === scene.id ? 1 : 0 }}
             />
           ))}
