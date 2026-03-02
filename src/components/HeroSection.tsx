@@ -1,11 +1,9 @@
-import heroBg from '@/assets/hero-bg.png';
-
 const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img src={heroBg} alt="Ambiente ELEVARE" className="w-full h-full object-cover" />
+        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
       </div>
 
