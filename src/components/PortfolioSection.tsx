@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { roomScenes, roomTypes } from '@/data/rooms';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { X } from 'lucide-react';
 
 const PortfolioSection = () => {
   const [filter, setFilter] = useState('all');
+  const [selectedScene, setSelectedScene] = useState<typeof roomScenes[0] | null>(null);
   const filtered = filter === 'all' ? roomScenes : roomScenes.filter(s => s.roomType === filter);
 
   return (
@@ -35,7 +38,7 @@ const PortfolioSection = () => {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(scene => (
-          <div key={scene.id} className="group relative rounded-xl overflow-hidden aspect-[4/3] cursor-pointer">
+          <div key={scene.id} className="group relative rounded-xl overflow-hidden aspect-[4/3] cursor-pointer" onClick={() => setSelectedScene(scene)}>
             <img
               src={scene.image}
               alt={`${scene.roomName} - ${scene.productName}`}
@@ -50,6 +53,25 @@ const PortfolioSection = () => {
           </div>
         ))}
       </div>
+
+      {/* Lightbox */}
+      <Dialog open={!!selectedScene} onOpenChange={() => setSelectedScene(null)}>
+        <DialogContent className="max-w-5xl w-[95vw] p-2 bg-background/95 border-gold/20">
+          {selectedScene && (
+            <div className="space-y-3">
+              <img
+                src={selectedScene.image}
+                alt={`${selectedScene.roomName} - ${selectedScene.productName}`}
+                className="w-full rounded-lg object-contain max-h-[80vh]"
+              />
+              <div className="px-2 pb-2">
+                <p className="text-gold font-semibold text-lg">{selectedScene.productName}</p>
+                <p className="text-muted-foreground text-sm">{selectedScene.roomName}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
