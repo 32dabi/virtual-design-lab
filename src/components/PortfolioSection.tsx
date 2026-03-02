@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { roomScenes, roomTypes } from '@/data/rooms';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { X } from 'lucide-react';
 
 const PortfolioSection = () => {
   const [filter, setFilter] = useState('all');
