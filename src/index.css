@@ -48,13 +48,21 @@
   }
 }
 
+@font-face {
+  font-family: 'Eunomia';
+  src: url('/fonts/Eunomia-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'Montserrat', sans-serif;
+    font-family: 'Montserrat', 'Inter', sans-serif;
   }
   html {
     scroll-behavior: smooth;
@@ -66,7 +74,7 @@
     font-family: 'Cormorant Garamond', serif;
   }
   .font-logo {
-    font-family: 'Poiret One', cursive;
+    font-family: 'Eunomia', 'Poiret One', cursive;
   }
   .font-subtitle {
     font-family: 'Montserrat', sans-serif;

@@ -24,11 +24,9 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-6">
         <div className="gold-line mx-auto mb-8" />
-        <img
-          src="/images/Logo_ELEVARE.png"
-          alt="ELEVARE"
-          className="h-16 md:h-24 mx-auto mb-4 drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]"
-        />
+        <h1 className="font-logo text-5xl md:text-7xl text-gold tracking-[0.5em] uppercase glow-gold mb-4">
+          ELEVARE
+        </h1>
         <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2 text-gold/80">
           Cores e Formas
         </p>
