@@ -12,12 +12,18 @@ const GalleryTab = () => {
   const [selectedScene, setSelectedScene] = useState<RoomScene | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const [transform, setTransform] = useState<Record<string, { x: number; y: number }>>({});
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
   const filtered = roomScenes.filter(s => {
+    if (failedImages.has(s.id)) return false;
     if (categoryFilter !== 'all' && s.roomCategory !== categoryFilter) return false;
     if (roomFilter !== 'all' && s.roomType !== roomFilter) return false;
     return true;
   });
+
+  const handleImageError = useCallback((sceneId: string) => {
+    setFailedImages(prev => new Set(prev).add(sceneId));
+  }, []);
 
   const visibleRoomTypes = roomTypes.filter(rt => {
     return roomScenes.some(s => {
@@ -112,11 +118,7 @@ const GalleryTab = () => {
                 src={scene.image}
                 alt={`${scene.roomName} - ${scene.productName}`}
                 className="w-full h-full object-cover transition-transform duration-300"
-                onError={(e) => {
-                  if (scene.fallbackImage && e.currentTarget.src !== scene.fallbackImage) {
-                    e.currentTarget.src = scene.fallbackImage;
-                  }
-                }}
+                onError={() => handleImageError(scene.id)}
                 style={{
                   transform: isHovered
                     ? `scale(1.15) translate(${t.x}px, ${t.y}px)`
@@ -157,11 +159,6 @@ const GalleryTab = () => {
                 src={selectedScene.image}
                 alt={`${selectedScene.roomName} - ${selectedScene.productName}`}
                 className="w-full rounded-lg object-contain max-h-[70vh]"
-                onError={(e) => {
-                  if (selectedScene.fallbackImage && e.currentTarget.src !== selectedScene.fallbackImage) {
-                    e.currentTarget.src = selectedScene.fallbackImage;
-                  }
-                }}
               />
               <div className="px-4 pb-4 space-y-3">
                 <div className="flex items-start justify-between">
