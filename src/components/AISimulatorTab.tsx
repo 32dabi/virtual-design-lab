@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
+import { downloadWithWatermark } from '@/lib/watermark';
 import { products, type Product } from '@/data/products';
 import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
@@ -228,15 +229,36 @@ const AISimulatorTab = () => {
       ctx.fillRect(5, h - 40, halfW, 35);
       ctx.fillRect(w / 2 + 5, h - 40, halfW, 35);
       ctx.fillStyle = '#D4AF37';
-      ctx.font = 'bold 14px sans-serif';
+      ctx.font = 'bold 14px Montserrat, sans-serif';
       ctx.fillText('Seu Ambiente', 15, h - 18);
       if (selectedProduct) {
         ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
       }
 
-      ctx.fillStyle = 'rgba(212,175,55,0.5)';
-      ctx.font = '11px sans-serif';
-      ctx.fillText('ELEVARE Revestimentos', w - 170, h - 18);
+      // Diagonal watermark
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.font = "48px 'Poiret One', sans-serif";
+      ctx.fillStyle = '#D4AF37';
+      ctx.translate(w / 2, h / 2);
+      ctx.rotate(-30 * Math.PI / 180);
+      for (let y = -h; y < h; y += 120) {
+        for (let x = -w; x < w; x += 400) {
+          ctx.fillText('ELEVARE', x, y);
+        }
+      }
+      ctx.restore();
+
+      // Bottom bar
+      ctx.fillStyle = 'rgba(11,61,46,0.85)';
+      ctx.fillRect(0, h - 60, w, 60);
+      ctx.font = "14px 'Montserrat', sans-serif";
+      ctx.fillStyle = '#D4AF37';
+      ctx.fillText('ELEVARE - Cores e Formas | elevare.com.br', 20, h - 25);
+      const date = new Date().toLocaleDateString('pt-BR');
+      const rightText = `Simulação: ${selectedProduct?.name || 'ambiente'} | ${date}`;
+      const tw = ctx.measureText(rightText).width;
+      ctx.fillText(rightText, w - tw - 20, h - 25);
 
       const link = document.createElement('a');
       link.download = `elevare-simulacao-${selectedProduct?.name?.replace(/\s+/g, '-').toLowerCase() || 'ambiente'}.png`;
@@ -244,10 +266,9 @@ const AISimulatorTab = () => {
       link.click();
     } catch (err) {
       console.error('Error saving image:', err);
-      const link = document.createElement('a');
-      link.download = 'elevare-simulacao.png';
-      link.href = activeImage.preview;
-      link.click();
+      if (activeImage.preview) {
+        downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+      }
     }
   }, [activeImage, closestScene, selectedProduct]);
 
