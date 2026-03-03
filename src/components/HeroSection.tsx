@@ -38,7 +38,7 @@ const HeroSection = () => {
           </a>
           <a
             href="#contato"
-            className="px-8 py-3 border-2 border-gold/70 text-gold font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/10 transition-colors"
+            className="px-10 py-4 bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-background font-bold tracking-wider uppercase text-sm rounded shadow-[0_0_20px_hsl(43_62%_52%/0.4)] hover:shadow-[0_0_30px_hsl(43_62%_52%/0.6)] hover:scale-105 transition-all duration-300"
           >
             Solicitar Orçamento
           </a>

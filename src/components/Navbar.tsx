@@ -30,7 +30,7 @@ const Navbar = () => {
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
           {links.map(l => (
-            <a key={l.href} href={l.href} className="text-sm tracking-widest uppercase text-foreground/70 hover:text-gold transition-colors duration-300">
+            <a key={l.href} href={l.href} className="text-sm tracking-widest uppercase text-gold/80 hover:text-gold transition-colors duration-300">
               {l.label}
             </a>
           ))}
@@ -46,7 +46,7 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden glass border-t border-gold/10 px-6 pb-6 space-y-4">
           {links.map(l => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block text-sm tracking-widest uppercase text-foreground/70 hover:text-gold transition-colors">
+            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block text-sm tracking-widest uppercase text-gold/80 hover:text-gold transition-colors">
               {l.label}
             </a>
           ))}
