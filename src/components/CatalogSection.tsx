@@ -28,8 +28,8 @@ const CatalogSection = () => {
             onClick={() => setActive(cat)}
             className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
               active === cat
-                ? 'bg-gold text-background'
-                : 'glass-card text-muted-foreground hover:text-gold'
+                ? 'border border-gold bg-gold/15 text-gold'
+                : 'border border-[rgba(45,106,79,0.3)] text-muted-foreground hover:text-gold hover:border-gold/40'
             }`}
           >
             {cat === 'all' ? 'Todos' : categoryLabels[cat]}

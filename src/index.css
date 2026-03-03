@@ -4,42 +4,46 @@
 
 @layer base {
   :root {
-    --background: 30 40% 5%;
-    --foreground: 40 20% 90%;
+    --background: 0 0% 4%;
+    --foreground: 38 30% 93%;
 
-    --card: 30 30% 8%;
-    --card-foreground: 40 20% 90%;
+    --card: 152 38% 8%;
+    --card-foreground: 38 30% 93%;
 
-    --popover: 30 30% 8%;
-    --popover-foreground: 40 20% 90%;
+    --popover: 152 38% 8%;
+    --popover-foreground: 38 30% 93%;
 
-    --primary: 40 45% 56%;
-    --primary-foreground: 30 40% 5%;
+    --primary: 43 62% 52%;
+    --primary-foreground: 0 0% 4%;
 
-    --secondary: 30 20% 14%;
-    --secondary-foreground: 40 20% 90%;
+    --secondary: 152 30% 15%;
+    --secondary-foreground: 38 30% 93%;
 
-    --muted: 30 15% 12%;
-    --muted-foreground: 40 10% 55%;
+    --muted: 150 18% 12%;
+    --muted-foreground: 140 10% 50%;
 
-    --accent: 40 45% 56%;
-    --accent-foreground: 30 40% 5%;
+    --accent: 43 62% 52%;
+    --accent-foreground: 0 0% 4%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 30 20% 16%;
-    --input: 30 20% 16%;
-    --ring: 40 45% 56%;
+    --border: 152 20% 14%;
+    --input: 152 20% 14%;
+    --ring: 43 62% 52%;
 
     --radius: 0.75rem;
 
-    --gold: 40 45% 56%;
-    --gold-light: 40 50% 70%;
-    --gold-dark: 40 40% 40%;
-    --dark: 30 40% 5%;
-    --dark-card: 30 30% 8%;
-    --dark-surface: 30 20% 12%;
+    --gold: 43 62% 52%;
+    --gold-light: 46 72% 59%;
+    --gold-dark: 43 85% 38%;
+    --dark: 0 0% 4%;
+    --dark-card: 152 38% 8%;
+    --dark-surface: 152 30% 15%;
+    --green-accent: 152 38% 24%;
+    --green-medium: 153 38% 31%;
+    --green-subtle: 153 30% 42%;
+    --text-tertiary: 140 15% 41%;
   }
 }
 
@@ -73,14 +77,17 @@
     text-shadow: 0 0 40px hsl(var(--gold) / 0.4), 0 0 80px hsl(var(--gold) / 0.2);
   }
   .glass {
-    background: hsl(var(--dark) / 0.7);
+    background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--gold) / 0.1);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   }
   .glass-card {
-    background: hsl(var(--dark-card) / 0.8);
+    background: rgba(13, 31, 21, 0.6);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--gold) / 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+  }
+  .glass-card:hover {
+    border-color: rgba(212, 175, 55, 0.35);
   }
 }
 
@@ -99,5 +106,5 @@
 .gold-line {
   width: 60px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, hsl(var(--gold)), transparent);
+  background: linear-gradient(90deg, hsl(var(--green-accent)), hsl(var(--gold)), hsl(var(--green-accent)));
 }

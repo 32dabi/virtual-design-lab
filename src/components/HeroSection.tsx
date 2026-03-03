@@ -1,29 +1,47 @@
 const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background */}
+      {/* Background gradient: black -> green -> black */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-[#1B4332] to-background" />
+
+      {/* Decorative vertical lines */}
+      <div className="absolute inset-0 flex justify-between px-[15%] pointer-events-none">
+        <div className="w-px h-full bg-gold/5" />
+        <div className="w-px h-full bg-gold/5" />
+        <div className="w-px h-full bg-gold/5" />
+      </div>
+
+      {/* Hero image overlay */}
       <div className="absolute inset-0">
-        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
+        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 text-center px-6">
         <div className="gold-line mx-auto mb-8" />
-        <h1 className="text-6xl md:text-8xl font-heading font-light tracking-[0.4em] text-gold glow-gold mb-4">
-          ELEVARE
-        </h1>
-        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase text-foreground/60 mb-2">
+        <img
+          src="/images/Logo_ELEVARE.png"
+          alt="ELEVARE"
+          className="h-24 md:h-36 mx-auto mb-4 drop-shadow-[0_0_40px_rgba(212,175,55,0.3)]"
+        />
+        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2" style={{ color: 'hsl(var(--text-tertiary))' }}>
           Cores e Formas
         </p>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-10">
           Painéis WPC e Bamboo Carbon que transformam espaços em experiências únicas
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#catalogo" className="px-8 py-3 bg-gold text-background font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/90 transition-colors">
+          <a
+            href="#catalogo"
+            className="px-8 py-3 bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-background font-semibold tracking-wider uppercase text-sm rounded hover:opacity-90 transition-opacity"
+          >
             Ver Catálogo
           </a>
-          <a href="#contato" className="px-8 py-3 border border-gold/40 text-gold font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/10 transition-colors">
+          <a
+            href="#contato"
+            className="px-8 py-3 border border-gold/40 text-gold font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/10 transition-colors"
+          >
             Solicitar Orçamento
           </a>
         </div>

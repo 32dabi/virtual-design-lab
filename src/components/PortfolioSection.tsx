@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { roomScenes, roomTypes } from '@/data/rooms';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { X } from 'lucide-react';
 
 const PortfolioSection = () => {
   const [filter, setFilter] = useState('all');
@@ -12,7 +11,7 @@ const PortfolioSection = () => {
     <section id="portfolio" className="py-20 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-bold text-gold tracking-wider mb-2">Projetos</h2>
+        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2">Projetos</h2>
         <p className="text-muted-foreground">Ambientes reais com nossos revestimentos</p>
       </div>
 
@@ -20,7 +19,7 @@ const PortfolioSection = () => {
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         <button
           onClick={() => setFilter('all')}
-          className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === 'all' ? 'bg-gold text-background' : 'glass-card text-muted-foreground hover:text-gold'}`}
+          className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === 'all' ? 'border border-gold bg-gold/15 text-gold' : 'border border-[rgba(45,106,79,0.3)] text-muted-foreground hover:text-gold hover:border-gold/40'}`}
         >
           Todos
         </button>
@@ -28,7 +27,7 @@ const PortfolioSection = () => {
           <button
             key={rt.id}
             onClick={() => setFilter(rt.id)}
-            className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === rt.id ? 'bg-gold text-background' : 'glass-card text-muted-foreground hover:text-gold'}`}
+            className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === rt.id ? 'border border-gold bg-gold/15 text-gold' : 'border border-[rgba(45,106,79,0.3)] text-muted-foreground hover:text-gold hover:border-gold/40'}`}
           >
             {rt.label}
           </button>
@@ -38,7 +37,7 @@ const PortfolioSection = () => {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(scene => (
-          <div key={scene.id} className="group relative rounded-xl overflow-hidden aspect-[4/3] cursor-pointer" onClick={() => setSelectedScene(scene)}>
+          <div key={scene.id} className="group relative rounded-xl overflow-hidden aspect-[4/3] cursor-pointer border border-transparent hover:border-gold/30 transition-all" onClick={() => setSelectedScene(scene)}>
             <img
               src={scene.image}
               alt={`${scene.roomName} - ${scene.productName}`}
