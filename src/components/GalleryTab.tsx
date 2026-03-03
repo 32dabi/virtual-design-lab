@@ -112,6 +112,11 @@ const GalleryTab = () => {
                 src={scene.image}
                 alt={`${scene.roomName} - ${scene.productName}`}
                 className="w-full h-full object-cover transition-transform duration-300"
+                onError={(e) => {
+                  if (scene.fallbackImage && e.currentTarget.src !== scene.fallbackImage) {
+                    e.currentTarget.src = scene.fallbackImage;
+                  }
+                }}
                 style={{
                   transform: isHovered
                     ? `scale(1.15) translate(${t.x}px, ${t.y}px)`
@@ -152,6 +157,11 @@ const GalleryTab = () => {
                 src={selectedScene.image}
                 alt={`${selectedScene.roomName} - ${selectedScene.productName}`}
                 className="w-full rounded-lg object-contain max-h-[70vh]"
+                onError={(e) => {
+                  if (selectedScene.fallbackImage && e.currentTarget.src !== selectedScene.fallbackImage) {
+                    e.currentTarget.src = selectedScene.fallbackImage;
+                  }
+                }}
               />
               <div className="px-4 pb-4 space-y-3">
                 <div className="flex items-start justify-between">
