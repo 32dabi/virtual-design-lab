@@ -23,10 +23,10 @@ const HeroSection = () => {
         <h1 className="text-6xl md:text-8xl font-heading font-light tracking-[0.4em] text-gold glow-gold mb-4">
           ELEVARE
         </h1>
-        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2 text-foreground/50">
+        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2 text-gold/80">
           Cores e Formas
         </p>
-        <p className="text-sm md:text-base text-foreground/60 max-w-lg mx-auto mb-10">
+        <p className="text-sm md:text-base text-foreground/90 max-w-lg mx-auto mb-10">
           Painéis WPC e Bamboo Carbon que transformam espaços em experiências únicas
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
