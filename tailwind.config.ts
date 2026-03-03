@@ -16,7 +16,7 @@ export default {
       fontFamily: {
         heading: ["'Cormorant Garamond'", "serif"],
       },
-        border: "hsl(var(--border))",
+      colors: {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
