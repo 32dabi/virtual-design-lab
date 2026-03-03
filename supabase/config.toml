@@ -2,3 +2,6 @@ project_id = "nkjeiaisqvetmbbompmm"
 
 [functions.analyze-room]
 verify_jwt = false
+
+[functions.generate-room-image]
+verify_jwt = false
