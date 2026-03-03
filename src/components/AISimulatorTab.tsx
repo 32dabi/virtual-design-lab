@@ -414,20 +414,29 @@ const AISimulatorTab = () => {
                   </span>
                 </div>
               </div>
-              {/* Navigation for multiple images in step 5 */}
-              {images.length > 1 && (
-                <div className="flex items-center justify-center gap-2 pb-2">
-                  {images.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveIndex(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all ${
-                        activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Save + Navigation */}
+              <div className="flex items-center justify-between px-3 pb-2">
+                <button
+                  onClick={saveSimulationImage}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors"
+                >
+                  <Download size={14} />
+                  Salvar Imagem
+                </button>
+                {images.length > 1 && (
+                  <div className="flex items-center gap-2">
+                    {images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIndex(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${
+                          activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
               {currentAnalysis?.recomendacao && (
                 <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
                   <div className="flex items-start gap-2">
@@ -446,9 +455,15 @@ const AISimulatorTab = () => {
                 Simulação Concluída!
               </h3>
               <p className="text-muted-foreground text-sm mb-6">
-                Gostou? Solicite um orçamento personalizado!
+                Gostou? Salve a imagem ou solicite um orçamento!
               </p>
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <button
+                  onClick={saveSimulationImage}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gold/15 text-gold rounded-xl font-medium hover:bg-gold/25 transition-colors border border-gold/30"
+                >
+                  <Download size={18} /> Salvar Imagem
+                </button>
                 <a
                   href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
                   target="_blank"
