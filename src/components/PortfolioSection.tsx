@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { roomScenes, roomTypes } from '@/data/rooms';
+import { roomScenes, roomTypes, type RoomScene } from '@/data/rooms';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 const PortfolioSection = () => {
   const [filter, setFilter] = useState('all');
-  const [selectedScene, setSelectedScene] = useState<typeof roomScenes[0] | null>(null);
+  const [selectedScene, setSelectedScene] = useState<RoomScene | null>(null);
   const filtered = filter === 'all' ? roomScenes : roomScenes.filter(s => s.roomType === filter);
 
   return (
