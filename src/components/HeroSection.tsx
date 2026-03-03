@@ -1,20 +1,20 @@
 const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background gradient: black -> green -> black */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-[#2D6B4F] to-background" />
+      {/* Background gradient: verde rico multidirecional */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #064028, #0B3D2E, #0E4D38, #0B3D2E, #064028)' }} />
 
       {/* Decorative vertical lines */}
       <div className="absolute inset-0 flex justify-between px-[15%] pointer-events-none">
-        <div className="w-px h-full bg-gold/5" />
-        <div className="w-px h-full bg-gold/5" />
-        <div className="w-px h-full bg-gold/5" />
+        <div className="w-px h-full bg-gold/8" />
+        <div className="w-px h-full bg-gold/8" />
+        <div className="w-px h-full bg-gold/8" />
       </div>
 
       {/* Hero image overlay */}
       <div className="absolute inset-0">
-        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
+        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/80" />
       </div>
 
       {/* Content */}

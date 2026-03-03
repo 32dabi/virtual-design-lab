@@ -9,7 +9,7 @@ const ProductCard = ({ product, onClick }: Props) => {
   return (
     <button
       onClick={() => onClick(product)}
-      className="glass-card rounded-xl p-5 text-left transition-all duration-300 group cursor-pointer hover:shadow-[0_0_20px_rgba(27,67,50,0.3)]"
+      className="glass-card rounded-xl p-5 text-left transition-all duration-300 group cursor-pointer hover:shadow-[0_0_20px_rgba(45,106,79,0.3)]"
     >
       <div className="flex items-center gap-4 mb-3">
         <div
