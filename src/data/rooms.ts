@@ -41,17 +41,60 @@ export const roomScenes: RoomScene[] = [
   { id: 'forro-pvc', roomName: 'Forro', roomType: 'forro', roomCategory: 'residencial', productId: 'forro-pvc-classic', productName: 'Forro PVC Classic', productCode: 'LTM 88676', image: '/images/forro-pvc.png' },
 
   // === COMERCIAL ===
+  // ESCRITÓRIO
   { id: 'escritorio-nogueira', roomName: 'Escritório Executivo', roomType: 'escritorio', roomCategory: 'comercial', productId: 'nogueira-escuro', productName: 'Nogueira Escuro', productCode: 'KT 1073', image: '/images/escritorio-nogueira.png' },
+  { id: 'escritorio-carvalho', roomName: 'Escritório Executivo', roomType: 'escritorio', roomCategory: 'comercial', productId: 'carvalho-claro', productName: 'Carvalho Claro', productCode: 'KT 1071', image: '/images/escritorio-carvalho.png' },
+  { id: 'escritorio-preto', roomName: 'Escritório Executivo', roomType: 'escritorio', roomCategory: 'comercial', productId: 'preto-liso', productName: 'Preto Liso', productCode: 'LTM 8032', image: '/images/escritorio-preto.png' },
+
+  // RECEPÇÃO
   { id: 'recepcao-nero', roomName: 'Recepção Corporativa', roomType: 'recepcao', roomCategory: 'comercial', productId: 'nero-marquina', productName: 'Nero Marquina', productCode: 'X89-248', image: '/images/recepcao-nero.png' },
+  { id: 'recepcao-carvalho', roomName: 'Recepção Corporativa', roomType: 'recepcao', roomCategory: 'comercial', productId: 'carvalho-natural', productName: 'Carvalho Natural', productCode: 'LTM 88696', image: '/images/recepcao-carvalho.png' },
+  { id: 'recepcao-teca', roomName: 'Recepção Corporativa', roomType: 'recepcao', roomCategory: 'comercial', productId: 'teca-natural', productName: 'Teca Natural', productCode: 'KT 1073 var', image: '/images/recepcao-teca.png' },
+
+  // CLÍNICA
   { id: 'clinica-tiffany', roomName: 'Clínica / Consultório', roomType: 'recepcao', roomCategory: 'comercial', productId: 'tiffany', productName: 'Tiffany', productCode: '512601', image: '/images/clinica-tiffany.png' },
+  { id: 'clinica-carvalho', roomName: 'Clínica / Consultório', roomType: 'recepcao', roomCategory: 'comercial', productId: 'carvalho-claro', productName: 'Carvalho Claro', productCode: 'KT 1071', image: '/images/clinica-carvalho.png' },
+  { id: 'clinica-amendoa', roomName: 'Clínica / Consultório', roomType: 'recepcao', roomCategory: 'comercial', productId: 'amendoa', productName: 'Amêndoa', productCode: 'LTD 89015', image: '/images/clinica-amendoa.png' },
+
+  // COPA
   { id: 'copa-carvalho', roomName: 'Copa / Área de Café', roomType: 'copa', roomCategory: 'comercial', productId: 'carvalho-natural', productName: 'Carvalho Natural', productCode: 'LTM 88696', image: '/images/copa-carvalho.png' },
+  { id: 'copa-teca', roomName: 'Copa / Área de Café', roomType: 'copa', roomCategory: 'comercial', productId: 'bamboo-teca-mel', productName: 'Bamboo Teca Mel', productCode: 'LTM88634', image: '/images/copa-teca.png' },
+  { id: 'copa-cerejeira', roomName: 'Copa / Área de Café', roomType: 'copa', roomCategory: 'comercial', productId: 'cerejeira', productName: 'Cerejeira', productCode: 'LTJCW2016', image: '/images/copa-cerejeira.png' },
+
+  // REUNIÕES
   { id: 'reunioes-preto', roomName: 'Sala de Reuniões', roomType: 'reunioes', roomCategory: 'comercial', productId: 'preto-liso', productName: 'Preto Liso', productCode: 'LTM 8032', image: '/images/reunioes-preto.png' },
+  { id: 'reunioes-nogueira', roomName: 'Sala de Reuniões', roomType: 'reunioes', roomCategory: 'comercial', productId: 'nogueira-escuro', productName: 'Nogueira Escuro', productCode: 'KT 1073', image: '/images/reunioes-nogueira.png' },
+  { id: 'reunioes-nero', roomName: 'Sala de Reuniões', roomType: 'reunioes', roomCategory: 'comercial', productId: 'nero-marquina', productName: 'Nero Marquina', productCode: 'X89-248', image: '/images/reunioes-nero.png' },
+
+  // LOUNGE
   { id: 'lounge-teca', roomName: 'Lounge / Descanso', roomType: 'lounge', roomCategory: 'comercial', productId: 'bamboo-teca-mel', productName: 'Bamboo Teca Mel', productCode: 'LTM88634', image: '/images/lounge-teca.png' },
+  { id: 'lounge-nogueira', roomName: 'Lounge / Descanso', roomType: 'lounge', roomCategory: 'comercial', productId: 'nogueira', productName: 'Nogueira', productCode: 'LTM 88676', image: '/images/lounge-nogueira.png' },
+  { id: 'lounge-carvalho', roomName: 'Lounge / Descanso', roomType: 'lounge', roomCategory: 'comercial', productId: 'carvalho-natural', productName: 'Carvalho Natural', productCode: 'LTM 88696', image: '/images/lounge-carvalho.png' },
+
+  // LOJA
   { id: 'loja-preto-fosco', roomName: 'Loja / Vitrine', roomType: 'loja', roomCategory: 'comercial', productId: 'preto-fosco', productName: 'Preto Fosco', productCode: 'LT00987', image: '/images/loja-preto-fosco.png' },
+  { id: 'loja-nero', roomName: 'Loja / Vitrine', roomType: 'loja', roomCategory: 'comercial', productId: 'nero-marquina', productName: 'Nero Marquina', productCode: 'X89-248', image: '/images/loja-nero.png' },
+  { id: 'loja-cerejeira', roomName: 'Loja / Vitrine', roomType: 'loja', roomCategory: 'comercial', productId: 'cerejeira', productName: 'Cerejeira', productCode: 'LTJCW2016', image: '/images/loja-cerejeira.png' },
+
+  // RESTAURANTE
   { id: 'restaurante-cerejeira', roomName: 'Restaurante', roomType: 'restaurante', roomCategory: 'comercial', productId: 'cerejeira', productName: 'Cerejeira', productCode: 'LTJCW2016', image: '/images/restaurante-cerejeira.png' },
+  { id: 'restaurante-nogueira', roomName: 'Restaurante', roomType: 'restaurante', roomCategory: 'comercial', productId: 'nogueira-escuro', productName: 'Nogueira Escuro', productCode: 'KT 1073', image: '/images/restaurante-nogueira.png' },
+  { id: 'restaurante-imbuia', roomName: 'Restaurante', roomType: 'restaurante', roomCategory: 'comercial', productId: 'imbuia', productName: 'Imbuia', productCode: 'LTM88626', image: '/images/restaurante-imbuia.png' },
+
+  // HOTEL
   { id: 'hotel-lobby', roomName: 'Hotel Lobby', roomType: 'hotel', roomCategory: 'comercial', productId: 'imbuia', productName: 'Imbuia', productCode: 'LTM88626', image: '/images/hotel-lobby.png' },
+  { id: 'hotel-lobby-nero', roomName: 'Hotel Lobby', roomType: 'hotel', roomCategory: 'comercial', productId: 'nero-marquina', productName: 'Nero Marquina', productCode: 'X89-248', image: '/images/hotel-lobby-nero.png' },
+  { id: 'hotel-lobby-teca', roomName: 'Hotel Lobby', roomType: 'hotel', roomCategory: 'comercial', productId: 'teca-natural', productName: 'Teca Natural', productCode: 'KT 1073 var', image: '/images/hotel-lobby-teca.png' },
   { id: 'hotel-quarto', roomName: 'Hotel Quarto', roomType: 'hotel', roomCategory: 'comercial', productId: 'carvalho-claro', productName: 'Carvalho Claro', productCode: 'KT 1071', image: '/images/hotel-quarto.png' },
+  { id: 'hotel-quarto-nogueira', roomName: 'Hotel Quarto', roomType: 'hotel', roomCategory: 'comercial', productId: 'nogueira', productName: 'Nogueira', productCode: 'LTM 88676', image: '/images/hotel-quarto-nogueira.png' },
+  { id: 'hotel-quarto-teca', roomName: 'Hotel Quarto', roomType: 'hotel', roomCategory: 'comercial', productId: 'teca-natural', productName: 'Teca Natural', productCode: 'KT 1073 var', image: '/images/hotel-quarto-teca.png' },
+
+  // BARBEARIA
   { id: 'barbearia-preto', roomName: 'Barbearia / Salão', roomType: 'barbearia', roomCategory: 'comercial', productId: 'preto-fosco', productName: 'Preto Fosco', productCode: 'LT00987', image: '/images/barbearia-preto.png' },
+  { id: 'barbearia-nogueira', roomName: 'Barbearia / Salão', roomType: 'barbearia', roomCategory: 'comercial', productId: 'nogueira-escuro', productName: 'Nogueira Escuro', productCode: 'KT 1073', image: '/images/barbearia-nogueira.png' },
+  { id: 'barbearia-nero', roomName: 'Barbearia / Salão', roomType: 'barbearia', roomCategory: 'comercial', productId: 'nero-marquina', productName: 'Nero Marquina', productCode: 'X89-248', image: '/images/barbearia-nero.png' },
+
+  // FACHADA
   { id: 'fachada-cherry', roomName: 'Fachada Comercial', roomType: 'fachada', roomCategory: 'comercial', productId: 'wpc-cherry-wood', productName: 'WPC Cherry Wood', productCode: 'WPC-CW', image: '/images/fachada-cherry.png' },
   { id: 'fachada-teak', roomName: 'Fachada Comercial', roomType: 'fachada', roomCategory: 'comercial', productId: 'wpc-teak', productName: 'WPC Teak', productCode: 'WPC-TK', image: '/images/fachada-teak.png' },
 ];
