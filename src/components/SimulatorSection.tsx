@@ -52,7 +52,7 @@ const SimulatorSection = () => {
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Room Preview with Parallax */}
         <div
-          className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-[16/10] bg-muted cursor-crosshair"
+          className="relative rounded-2xl overflow-hidden aspect-video bg-background cursor-crosshair"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
@@ -61,7 +61,7 @@ const SimulatorSection = () => {
               key={scene.id}
               src={scene.image}
               alt={`${scene.roomName} com ${scene.productName}`}
-              className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+              className="absolute inset-0 w-full h-full object-contain transition-all duration-700"
               style={{
                 opacity: currentScene?.id === scene.id ? 1 : 0,
                 transform: currentScene?.id === scene.id
