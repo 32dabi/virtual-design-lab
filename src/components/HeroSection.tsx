@@ -32,7 +32,7 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#catalogo"
-            className="px-8 py-3 bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-background font-semibold tracking-wider uppercase text-sm rounded hover:opacity-90 transition-opacity"
+            className="px-8 py-3 bg-gradient-to-r from-[#D4AF37] to-[#E8C547] text-background font-semibold tracking-wider uppercase text-sm rounded hover:opacity-90 transition-opacity flex items-center justify-center"
           >
             Ver Catálogo
           </a>
