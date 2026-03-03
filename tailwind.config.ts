@@ -15,6 +15,9 @@ export default {
     extend: {
       fontFamily: {
         heading: ["'Cormorant Garamond'", "serif"],
+        logo: ["'Poiret One'", "cursive"],
+        subtitle: ["'Montserrat'", "sans-serif"],
+        body: ["'Montserrat'", "'Inter'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
