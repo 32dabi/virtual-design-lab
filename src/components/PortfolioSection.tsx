@@ -11,7 +11,7 @@ const PortfolioSection = () => {
     <section id="portfolio" className="py-20 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Projetos</h2>
+        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2">Projetos</h2>
         <p className="text-muted-foreground">Ambientes reais com nossos revestimentos</p>
       </div>
 
