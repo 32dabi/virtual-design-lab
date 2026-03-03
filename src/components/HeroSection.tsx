@@ -23,10 +23,10 @@ const HeroSection = () => {
         <h1 className="text-6xl md:text-8xl font-heading font-light tracking-[0.4em] text-gold glow-gold mb-4">
           ELEVARE
         </h1>
-        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2" style={{ color: 'hsl(var(--text-tertiary))' }}>
+        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase mb-2 text-foreground/50">
           Cores e Formas
         </p>
-        <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-10">
+        <p className="text-sm md:text-base text-foreground/60 max-w-lg mx-auto mb-10">
           Painéis WPC e Bamboo Carbon que transformam espaços em experiências únicas
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -38,7 +38,7 @@ const HeroSection = () => {
           </a>
           <a
             href="#contato"
-            className="px-8 py-3 border border-gold/40 text-gold font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/10 transition-colors"
+            className="px-8 py-3 border-2 border-gold/70 text-gold font-semibold tracking-wider uppercase text-sm rounded hover:bg-gold/10 transition-colors"
           >
             Solicitar Orçamento
           </a>
