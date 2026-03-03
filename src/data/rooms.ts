@@ -1,4 +1,4 @@
-const STORAGE_BASE = `https://nkjeiaisqvetmbbompmm.supabase.co/storage/v1/object/public/room-renders`;
+// Room scenes data
 
 export interface RoomScene {
   id: string;
