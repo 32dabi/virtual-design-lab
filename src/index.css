@@ -57,6 +57,9 @@
 }
 
 @layer utilities {
+  .font-heading {
+    font-family: 'Cormorant Garamond', serif;
+  }
   .text-gold {
     color: hsl(var(--gold));
   }

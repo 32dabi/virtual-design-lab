@@ -12,7 +12,7 @@ const AboutSection = () => {
     <section id="sobre" className="py-20 px-6 max-w-7xl mx-auto">
       <div className="text-center mb-14">
         <div className="gold-line mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-bold text-gold tracking-wider mb-2">Por que ELEVARE?</h2>
+        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2">Por que ELEVARE?</h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
           Transformamos ambientes com revestimentos de alta performance que unem design, sustentabilidade e praticidade.
         </p>
