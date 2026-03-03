@@ -3,7 +3,7 @@ import { products, categoryLabels, type Product, type ProductCategory } from '@/
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 
-const categories: (ProductCategory | 'all')[] = ['all', 'ripado-madeira', 'ripado-colors', 'bamboo-carbon', 'wpc-externo'];
+const categories: (ProductCategory | 'all')[] = ['all', 'ripado-wpc', 'ripado-fluted', 'bamboo-carbon', 'forro-pvc', 'wpc-externo', 'perfis'];
 
 const CatalogSection = () => {
   const [active, setActive] = useState<ProductCategory | 'all'>('all');
@@ -13,20 +13,15 @@ const CatalogSection = () => {
 
   return (
     <section id="catalogo" className="py-20 px-6 max-w-7xl mx-auto">
-      {/* Banner */}
-      <div className="relative rounded-2xl overflow-hidden mb-12 h-48 md:h-64">
-        <img src="/images/catalogo-cores.png" alt="Catálogo ELEVARE" className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent flex items-center px-8">
-          <div>
-            <div className="gold-line mb-4" />
-            <h2 className="text-3xl md:text-4xl font-bold text-gold tracking-wider">Catálogo</h2>
-            <p className="text-muted-foreground mt-2">Explore nossa linha completa de revestimentos</p>
-          </div>
-        </div>
+      {/* Header */}
+      <div className="text-center mb-12">
+        <div className="gold-line mx-auto mb-4" />
+        <h2 className="text-3xl md:text-4xl font-bold text-gold tracking-wider">Catálogo</h2>
+        <p className="text-muted-foreground mt-2">Explore nossa linha completa de revestimentos</p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-8 justify-center">
         {categories.map(cat => (
           <button
             key={cat}

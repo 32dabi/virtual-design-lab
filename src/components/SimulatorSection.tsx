@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { roomScenes, roomTypes } from '@/data/rooms';
 import { products } from '@/data/products';
 import { MessageCircle } from 'lucide-react';
@@ -6,13 +6,13 @@ import { MessageCircle } from 'lucide-react';
 const SimulatorSection = () => {
   const [activeRoom, setActiveRoom] = useState('sala');
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
+  const [transform, setTransform] = useState({ x: 0, y: 0 });
 
   const scenesForRoom = useMemo(
     () => roomScenes.filter(s => s.roomType === activeRoom),
     [activeRoom]
   );
 
-  // Find matching scene or fall back to first scene of this room
   const currentScene = useMemo(() => {
     if (activeProductId) {
       const match = scenesForRoom.find(s => s.productId === activeProductId);
@@ -21,11 +21,21 @@ const SimulatorSection = () => {
     return scenesForRoom[0] || null;
   }, [scenesForRoom, activeProductId]);
 
-  // Products that have scenes for this room (highlighted)
   const productsWithScenes = useMemo(
     () => new Set(scenesForRoom.map(s => s.productId)),
     [scenesForRoom]
   );
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTransform({ x: -x * 20, y: -y * 20 });
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setTransform({ x: 0, y: 0 });
+  }, []);
 
   const whatsappMsg = currentScene
     ? encodeURIComponent(`Olá! Simulei o painel ${currentScene.productName} no ambiente ${currentScene.roomName} e gostaria de solicitar um orçamento.`)
@@ -40,20 +50,30 @@ const SimulatorSection = () => {
       </div>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* Room Preview */}
-        <div className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-[16/10] bg-muted">
+        {/* Room Preview with Parallax */}
+        <div
+          className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-[16/10] bg-muted cursor-crosshair"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
           {scenesForRoom.map(scene => (
             <img
               key={scene.id}
               src={scene.image}
               alt={`${scene.roomName} com ${scene.productName}`}
-              className="absolute inset-0 w-full h-full object-contain transition-opacity duration-700"
-              style={{ opacity: currentScene?.id === scene.id ? 1 : 0 }}
+              className="absolute inset-0 w-full h-full object-cover transition-all duration-700"
+              style={{
+                opacity: currentScene?.id === scene.id ? 1 : 0,
+                transform: currentScene?.id === scene.id
+                  ? `scale(1.2) translate(${transform.x}px, ${transform.y}px)`
+                  : 'scale(1.2)',
+                transition: 'opacity 0.7s ease, transform 0.3s ease-out',
+              }}
             />
           ))}
-          {/* Label */}
+          {/* Badge */}
           {currentScene && (
-            <div className="absolute bottom-4 left-4 glass rounded-lg px-4 py-2">
+            <div className="absolute bottom-4 left-4 glass rounded-lg px-4 py-2 z-10">
               <p className="text-gold text-sm font-medium">{currentScene.productName}</p>
               <p className="text-foreground/60 text-xs">{currentScene.roomName}</p>
             </div>
@@ -82,33 +102,30 @@ const SimulatorSection = () => {
             </div>
           </div>
 
-          {/* Color selector */}
+          {/* Color selector - only show products with scenes for this room */}
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Cor / Produto</p>
             <div className="grid grid-cols-4 gap-3">
-              {products.map(p => {
-                const hasScene = productsWithScenes.has(p.id);
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => hasScene && setActiveProductId(p.id)}
-                    title={p.name}
-                    className={`relative group ${!hasScene ? 'opacity-30 cursor-not-allowed' : ''}`}
-                  >
-                    <div
-                      className={`w-10 h-10 mx-auto rounded-full border-2 transition-all duration-300 ${
-                        activeProductId === p.id
-                          ? 'border-gold scale-110 shadow-[0_0_12px_hsl(40_45%_56%/0.4)]'
-                          : 'border-border hover:border-gold/50'
-                      }`}
-                      style={{ backgroundColor: p.color }}
-                    />
-                    <p className="text-[10px] text-muted-foreground mt-1 truncate text-center group-hover:text-gold transition-colors">
-                      {p.name}
-                    </p>
-                  </button>
-                );
-              })}
+              {products.filter(p => productsWithScenes.has(p.id)).map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => setActiveProductId(p.id)}
+                  title={p.name}
+                  className="relative group"
+                >
+                  <div
+                    className={`w-10 h-10 mx-auto rounded-full border-2 transition-all duration-300 ${
+                      activeProductId === p.id
+                        ? 'border-gold scale-110 shadow-[0_0_12px_hsl(40_45%_56%/0.4)]'
+                        : 'border-border hover:border-gold/50'
+                    }`}
+                    style={{ backgroundColor: p.color }}
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1 truncate text-center group-hover:text-gold transition-colors">
+                    {p.name}
+                  </p>
+                </button>
+              ))}
             </div>
           </div>
 
