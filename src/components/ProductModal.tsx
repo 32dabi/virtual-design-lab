@@ -20,7 +20,7 @@ const ProductModal = ({ product, open, onClose }: Props) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full border-2 border-gold/30" style={{ backgroundColor: product.color }} />
-            <span className="text-gold">{product.name}</span>
+            <span className="text-gold font-heading">{product.name}</span>
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
             {categoryLabels[product.category]}
@@ -36,7 +36,7 @@ const ProductModal = ({ product, open, onClose }: Props) => {
             <a
               href="#simulador"
               onClick={onClose}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gold/10 border border-gold/30 text-gold rounded-lg text-sm font-medium hover:bg-gold/20 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[rgba(27,67,50,0.3)] border border-gold/30 text-gold rounded-lg text-sm font-medium hover:bg-gold/20 transition-colors"
             >
               <Eye size={16} /> Simular no Ambiente
             </a>
@@ -44,7 +44,7 @@ const ProductModal = ({ product, open, onClose }: Props) => {
               href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#25D366] text-white rounded-lg text-sm font-medium hover:bg-[#20BD5A] transition-colors"
             >
               <MessageCircle size={16} /> Solicitar Orçamento
             </a>

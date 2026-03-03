@@ -19,8 +19,8 @@ const AboutSection = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {features.map(f => (
-          <div key={f.title} className="glass-card rounded-xl p-6 text-center hover:border-gold/30 transition-all duration-300 group">
-            <div className="w-14 h-14 mx-auto rounded-full bg-gold/10 flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
+          <div key={f.title} className="glass-card rounded-xl p-6 text-center transition-all duration-300 group">
+            <div className="w-14 h-14 mx-auto rounded-full bg-[rgba(27,67,50,0.3)] flex items-center justify-center mb-4 group-hover:bg-gold/20 transition-colors">
               <f.icon className="text-gold" size={24} />
             </div>
             <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>

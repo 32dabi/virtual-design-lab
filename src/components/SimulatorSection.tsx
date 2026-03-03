@@ -52,7 +52,7 @@ const SimulatorSection = () => {
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
         {/* Room Preview with Parallax */}
         <div
-          className="relative rounded-2xl overflow-hidden aspect-video bg-background cursor-crosshair"
+          className="relative rounded-2xl overflow-hidden aspect-video bg-background cursor-crosshair border border-border"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
@@ -102,7 +102,7 @@ const SimulatorSection = () => {
             </div>
           </div>
 
-          {/* Color selector - only show products with scenes for this room */}
+          {/* Color selector */}
           <div>
             <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Cor / Produto</p>
             <div className="grid grid-cols-4 gap-3">
@@ -116,7 +116,7 @@ const SimulatorSection = () => {
                   <div
                     className={`w-10 h-10 mx-auto rounded-full border-2 transition-all duration-300 ${
                       activeProductId === p.id
-                        ? 'border-gold scale-110 shadow-[0_0_12px_hsl(40_45%_56%/0.4)]'
+                        ? 'border-gold scale-110 shadow-[0_0_12px_hsl(43_62%_52%/0.4)]'
                         : 'border-border hover:border-gold/50'
                     }`}
                     style={{ backgroundColor: p.color }}
@@ -134,7 +134,7 @@ const SimulatorSection = () => {
             href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
+            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#25D366] text-white rounded-xl text-sm font-medium hover:bg-[#20BD5A] transition-colors"
           >
             <MessageCircle size={18} /> Solicitar Orçamento
           </a>
