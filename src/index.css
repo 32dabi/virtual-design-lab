@@ -4,22 +4,22 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 150 30% 8%;
     --foreground: 38 30% 93%;
 
-    --card: 152 38% 8%;
+    --card: 152 35% 13%;
     --card-foreground: 38 30% 93%;
 
-    --popover: 152 38% 8%;
+    --popover: 152 35% 13%;
     --popover-foreground: 38 30% 93%;
 
     --primary: 43 62% 52%;
     --primary-foreground: 0 0% 4%;
 
-    --secondary: 152 30% 15%;
+    --secondary: 152 30% 20%;
     --secondary-foreground: 38 30% 93%;
 
-    --muted: 150 18% 12%;
+    --muted: 150 20% 16%;
     --muted-foreground: 140 10% 62%;
 
     --accent: 43 62% 52%;
@@ -28,8 +28,8 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 152 20% 14%;
-    --input: 152 20% 14%;
+    --border: 152 20% 20%;
+    --input: 152 20% 20%;
     --ring: 43 62% 52%;
 
     --radius: 0.75rem;
@@ -37,11 +37,11 @@
     --gold: 43 62% 52%;
     --gold-light: 46 72% 59%;
     --gold-dark: 43 85% 38%;
-    --dark: 0 0% 4%;
-    --dark-card: 152 38% 8%;
-    --dark-surface: 152 30% 15%;
-    --green-accent: 152 38% 24%;
-    --green-medium: 153 38% 31%;
+    --dark: 150 30% 8%;
+    --dark-card: 152 35% 13%;
+    --dark-surface: 152 30% 20%;
+    --green-accent: 152 38% 30%;
+    --green-medium: 153 38% 38%;
     --green-subtle: 153 30% 42%;
     --text-tertiary: 140 15% 41%;
   }
@@ -77,12 +77,12 @@
     text-shadow: 0 0 40px hsl(var(--gold) / 0.4), 0 0 80px hsl(var(--gold) / 0.2);
   }
   .glass {
-    background: rgba(10, 10, 10, 0.95);
+    background: rgba(13, 31, 21, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   }
   .glass-card {
-    background: rgba(13, 31, 21, 0.6);
+    background: rgba(20, 45, 32, 0.7);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(212, 175, 55, 0.12);
   }
