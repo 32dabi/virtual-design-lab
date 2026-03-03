@@ -1,47 +1,58 @@
-export type ProductCategory = 'ripado-madeira' | 'ripado-colors' | 'bamboo-carbon' | 'wpc-externo';
+export type ProductCategory = 'ripado-wpc' | 'ripado-fluted' | 'bamboo-carbon' | 'forro-pvc' | 'wpc-externo' | 'perfis';
 
 export interface Product {
   id: string;
   name: string;
   code: string;
-  color: string; // hex
+  color: string;
   category: ProductCategory;
   dimensions: string;
   description: string;
+  application: string;
 }
 
 export const categoryLabels: Record<ProductCategory, string> = {
-  'ripado-madeira': 'Ripados Madeira',
-  'ripado-colors': 'Ripados Colors',
+  'ripado-wpc': 'Ripados WPC',
+  'ripado-fluted': 'Ripados Fluted',
   'bamboo-carbon': 'Bamboo Carbon',
+  'forro-pvc': 'Forro PVC',
   'wpc-externo': 'WPC Externo',
+  'perfis': 'Perfis e Acessórios',
 };
 
 export const products: Product[] = [
-  // Ripados Madeira
-  { id: 'carvalho', name: 'Carvalho', code: 'RM-001', color: '#C4A882', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Tom claro e sofisticado, ideal para ambientes acolhedores.' },
-  { id: 'ambar', name: 'Âmbar', code: 'RM-002', color: '#B8860B', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Dourado quente, traz elegância natural ao ambiente.' },
-  { id: 'canela', name: 'Canela', code: 'RM-003', color: '#8B6914', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Marrom médio acolhedor e versátil.' },
-  { id: 'nogueira', name: 'Nogueira', code: 'RM-004', color: '#5C4033', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Escuro e rico, perfeito para ambientes sofisticados.' },
-  { id: 'imbuia', name: 'Imbuia', code: 'RM-005', color: '#4A3728', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Madeira nobre brasileira, tom profundo e luxuoso.' },
-  { id: 'cumaru', name: 'Cumaru', code: 'RM-006', color: '#6B4226', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Tom avermelhado que remete à natureza brasileira.' },
-  { id: 'cedro', name: 'Cedro', code: 'RM-007', color: '#A0522D', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'Clássico e atemporal, combina com qualquer decoração.' },
-  { id: 'ipe', name: 'Ipê', code: 'RM-008', color: '#3B2F2F', category: 'ripado-madeira', dimensions: '2700 x 160 x 22mm', description: 'O mais escuro da linha madeira, sofisticação máxima.' },
+  // === RIPADOS WPC (Parede Interna) ===
+  { id: 'carvalho-natural', name: 'Carvalho Natural', code: 'LTM 88696', color: '#C4AA82', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Tom carvalho claro e natural. Ideal para ambientes acolhedores e salas de estar.', application: 'Parede Interna' },
+  { id: 'nogueira', name: 'Nogueira', code: 'LTM 88676', color: '#5C3D2E', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Tom nogueira médio, sofisticado e versátil. Perfeito para quartos e home offices.', application: 'Parede Interna' },
+  { id: 'amendoa', name: 'Amêndoa', code: 'LTD 89015', color: '#D4B896', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Tom amêndoa claro e luminoso. Amplia visualmente os espaços com elegância.', application: 'Parede Interna' },
+  { id: 'imbuia', name: 'Imbuia', code: 'LTM88626', color: '#3D2B1F', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Tom imbuia escuro e profundo. Nobreza brasileira para ambientes sofisticados.', application: 'Parede Interna' },
+  { id: 'tiffany', name: 'Tiffany', code: '512601', color: '#5ABFAD', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Verde água vibrante. Ousadia e frescor para espaços comerciais e clínicas.', application: 'Parede Interna' },
+  { id: 'preto-fosco', name: 'Preto Fosco', code: 'LT00987', color: '#1A1A1A', category: 'ripado-wpc', dimensions: '160 x 2800 x 24mm', description: 'Preto fosco elegante. Impacto visual dramático para ambientes de alto padrão.', application: 'Parede Interna' },
 
-  // Ripados Colors
-  { id: 'preto', name: 'Preto', code: 'RC-001', color: '#1A1A1A', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Elegância absoluta, impacto visual dramático.' },
-  { id: 'branco', name: 'Branco', code: 'RC-002', color: '#F5F5F0', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Clean e luminoso, amplia visualmente os espaços.' },
-  { id: 'verde-menta', name: 'Verde Menta', code: 'RC-003', color: '#98D4AA', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Frescor e personalidade para ambientes modernos.' },
-  { id: 'azul-profundo', name: 'Azul Profundo', code: 'RC-004', color: '#1B3A5C', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Sofisticado e envolvente, traz profundidade.' },
-  { id: 'terracota', name: 'Terracota', code: 'RC-005', color: '#C75B39', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Calor e rusticidade contemporânea.' },
-  { id: 'cinza-grafite', name: 'Cinza Grafite', code: 'RC-006', color: '#4A4A4A', category: 'ripado-colors', dimensions: '2700 x 160 x 22mm', description: 'Neutro e industrial, combina com tudo.' },
+  // === RIPADOS FLUTED (Premium) ===
+  { id: 'nogueira-escuro', name: 'Nogueira Escuro', code: 'KT 1073', color: '#3D2B1F', category: 'ripado-fluted', dimensions: '150 x 2800 x 15mm', description: 'Nogueira escuro com veios naturais marcantes. Ideal para painéis de TV e cabeceiras.', application: 'Parede Interna - Premium' },
+  { id: 'carvalho-claro', name: 'Carvalho Claro', code: 'KT 1071', color: '#C4AA82', category: 'ripado-fluted', dimensions: '150 x 2800 x 15mm', description: 'Carvalho claro e moderno. Combina com decoração escandinava e minimalista.', application: 'Parede Interna - Premium' },
+  { id: 'preto-liso', name: 'Preto Liso', code: 'LTM 8032', color: '#2D2D2D', category: 'ripado-fluted', dimensions: '130 x 2800 x 8mm', description: 'Preto liso com textura sutil. Minimalismo sofisticado para projetos premium.', application: 'Parede Interna - Premium' },
+  { id: 'nero-marquina', name: 'Nero Marquina', code: 'X89-248', color: '#1A1A1A', category: 'ripado-fluted', dimensions: '130 x 2800 x 8mm', description: 'Padrão mármore preto com veios dourados e brancos. Luxo contemporâneo.', application: 'Parede Interna - Premium' },
+  { id: 'cerejeira', name: 'Cerejeira', code: 'LTJCW2016', color: '#A0522D', category: 'ripado-fluted', dimensions: '150 x 2800 x 15mm', description: 'Cerejeira avermelhado com veios expressivos. Calor e personalidade.', application: 'Parede Interna - Premium' },
+  { id: 'teca-natural', name: 'Teca Natural', code: 'KT 1073 var', color: '#B8860B', category: 'ripado-fluted', dimensions: '150 x 2800 x 15mm', description: 'Teca dourado clássico atemporal que combina com qualquer ambiente.', application: 'Parede Interna - Premium' },
 
-  // Bamboo Carbon
-  { id: 'bamboo-natural', name: 'Bamboo Natural', code: 'BC-001', color: '#D4C5A9', category: 'bamboo-carbon', dimensions: '2400 x 150 x 20mm', description: 'Textura única de bamboo carbonizado, sustentável e elegante.' },
-  { id: 'bamboo-escuro', name: 'Bamboo Escuro', code: 'BC-002', color: '#8B7355', category: 'bamboo-carbon', dimensions: '2400 x 150 x 20mm', description: 'Versão escura do bamboo, sofisticação natural.' },
-  { id: 'bamboo-marmore', name: 'Bamboo Mármore', code: 'BC-003', color: '#B8A88A', category: 'bamboo-carbon', dimensions: '2400 x 150 x 20mm', description: 'Efeito marmorizado dourado, peça de destaque.' },
+  // === BAMBOO CARBON ===
+  { id: 'bamboo-carvalho', name: 'Bamboo Carvalho Natural', code: 'LTM88614', color: '#C4AA82', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Bambu carbonizado tom carvalho. Grande formato para cobertura rápida.', application: 'Parede Interna' },
+  { id: 'bamboo-nogueira', name: 'Bamboo Nogueira', code: 'LTM88631', color: '#5C3D2E', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Nogueira médio-escuro. Textura amadeirada profunda em grande formato.', application: 'Parede Interna' },
+  { id: 'bamboo-imbuia', name: 'Bamboo Imbuia', code: 'LTM88653', color: '#3D2B1F', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Imbuia escuro com veios pronunciados. Sofisticação para painéis destaque.', application: 'Parede Interna' },
+  { id: 'bamboo-teca-mel', name: 'Bamboo Teca Mel', code: 'LTM88634', color: '#B8860B', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Teca mel dourado. Calor e acolhimento em grandes superfícies.', application: 'Parede Interna' },
 
-  // WPC Externo
-  { id: 'wpc-teca', name: 'WPC Teca', code: 'WE-001', color: '#A0855B', category: 'wpc-externo', dimensions: '2200 x 145 x 25mm', description: 'Resistente às intempéries, visual de madeira natural.' },
-  { id: 'wpc-ipe', name: 'WPC Ipê', code: 'WE-002', color: '#5C4033', category: 'wpc-externo', dimensions: '2200 x 145 x 25mm', description: 'Durabilidade máxima para áreas externas.' },
+  // === FORRO PVC ===
+  { id: 'forro-pvc-classic', name: 'Forro PVC Classic', code: 'LTM 88676', color: '#F5F0E8', category: 'forro-pvc', dimensions: '300 x 2800 x 8mm', description: 'Forro PVC de alta qualidade. Praticidade e design.', application: 'Teto / Forro' },
+
+  // === WPC EXTERNO ===
+  { id: 'wpc-cherry-wood', name: 'WPC Cherry Wood', code: 'WPC-CW', color: '#A0522D', category: 'wpc-externo', dimensions: '219 x 2900 x 26mm', description: 'Painel externo tom cerejeira. Resistente a UV e umidade.', application: 'Fachada / Deck' },
+  { id: 'wpc-teak', name: 'WPC Teak', code: 'WPC-TK', color: '#5C4033', category: 'wpc-externo', dimensions: '219 x 2900 x 26mm', description: 'Painel externo tom teca escuro. Durabilidade máxima.', application: 'Fachada / Deck' },
+
+  // === PERFIS DE ACABAMENTO ===
+  { id: 'mental-line-silver', name: 'Mental Line Silver', code: 'ML-SV', color: '#C0C0C0', category: 'perfis', dimensions: '3000 x 8mm', description: 'Perfil de acabamento prata. Detalhamento refinado entre painéis.', application: 'Acabamento' },
+  { id: 'mental-line-gold', name: 'Mental Line Gold', code: 'ML-GD', color: '#D4AF37', category: 'perfis', dimensions: '3000 x 8mm', description: 'Perfil de acabamento dourado. Toque de luxo nos detalhes.', application: 'Acabamento' },
+  { id: 'mental-line-black', name: 'Mental Line Black', code: 'ML-BK', color: '#1A1A1A', category: 'perfis', dimensions: '3000 x 8mm', description: 'Perfil de acabamento preto. Discreto e elegante.', application: 'Acabamento' },
+  { id: 'cantoneira-pvc', name: 'Cantoneira PVC', code: 'CT-PVC', color: '#8B7355', category: 'perfis', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC disponível em 6 cores. Acabamento perfeito nas quinas.', application: 'Acabamento' },
 ];
