@@ -44,7 +44,7 @@ export const products: Product[] = [
   { id: 'bamboo-teca-mel', name: 'Bamboo Teca Mel', code: 'LTM88634', color: '#B8860B', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Teca mel dourado. Calor e acolhimento em grandes superfícies.', application: 'Parede Interna' },
 
   // === FORRO PVC ===
-  { id: 'forro-pvc-classic', name: 'Forro PVC Classic', code: 'LTM 88676', color: '#F5F0E8', category: 'forro-pvc', dimensions: '300 x 2800 x 8mm', description: 'Forro PVC de alta qualidade. Praticidade e design.', application: 'Teto / Forro' },
+  { id: 'forro-pvc-classic', name: 'Forro PVC Classic', code: 'LTM88676-forro', color: '#F5F0E8', category: 'forro-pvc', dimensions: '300 x 2800 x 8mm', description: 'Forro PVC de alta qualidade. Praticidade e design.', application: 'Teto / Forro' },
 
   // === WPC EXTERNO ===
   { id: 'wpc-cherry-wood', name: 'WPC Cherry Wood', code: 'WPC-CW', color: '#A0522D', category: 'wpc-externo', dimensions: '219 x 2900 x 26mm', description: 'Painel externo tom cerejeira. Resistente a UV e umidade.', application: 'Fachada / Deck' },
