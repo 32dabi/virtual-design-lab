@@ -10,10 +10,10 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-6">
         <div className="gold-line mx-auto mb-8" />
-        <h1 className="text-6xl md:text-8xl font-bold tracking-[0.4em] text-gold glow-gold mb-4">
+        <h1 className="text-6xl md:text-8xl font-heading font-light tracking-[0.4em] text-gold glow-gold mb-4">
           ELEVARE
         </h1>
-        <p className="text-lg md:text-xl tracking-[0.2em] uppercase text-foreground/60 mb-2">
+        <p className="text-lg md:text-xl font-heading font-normal tracking-[0.2em] uppercase text-foreground/60 mb-2">
           Cores e Formas
         </p>
         <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto mb-10">
