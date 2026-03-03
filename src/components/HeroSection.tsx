@@ -2,7 +2,7 @@ const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradient: black -> green -> black */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-[#1B4332] to-background" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-[#2D6B4F] to-background" />
 
       {/* Decorative vertical lines */}
       <div className="absolute inset-0 flex justify-between px-[15%] pointer-events-none">
@@ -14,7 +14,7 @@ const HeroSection = () => {
       {/* Hero image overlay */}
       <div className="absolute inset-0">
         <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background" />
       </div>
 
       {/* Content */}
