@@ -21,7 +21,10 @@ const ProductCard = ({ product, onClick }: Props) => {
           <p className="text-xs text-muted-foreground">{product.code}</p>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{product.dimensions}</p>
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>{product.dimensions}</span>
+        <span className="text-gold/60">{product.application}</span>
+      </div>
     </button>
   );
 };
