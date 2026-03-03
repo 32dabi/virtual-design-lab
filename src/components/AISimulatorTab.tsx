@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
-import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
 import { products, type Product } from '@/data/products';
 import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
@@ -191,6 +191,66 @@ const AISimulatorTab = () => {
 
   const handleGenerate = () => setStep(5);
 
+  const saveSimulationImage = useCallback(async () => {
+    if (!activeImage) return;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const loadImg = (src: string): Promise<HTMLImageElement> =>
+      new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+
+    try {
+      const userImg = await loadImg(activeImage.preview);
+      const productImg = closestScene ? await loadImg(closestScene.image) : null;
+
+      const w = 1200;
+      const h = 600;
+      canvas.width = w;
+      canvas.height = h;
+
+      ctx.fillStyle = '#0D1F15';
+      ctx.fillRect(0, 0, w, h);
+
+      const halfW = w / 2 - 10;
+      ctx.drawImage(userImg, 5, 5, halfW, h - 10);
+      if (productImg) {
+        ctx.drawImage(productImg, w / 2 + 5, 5, halfW, h - 10);
+      }
+
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(5, h - 40, halfW, 35);
+      ctx.fillRect(w / 2 + 5, h - 40, halfW, 35);
+      ctx.fillStyle = '#D4AF37';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText('Seu Ambiente', 15, h - 18);
+      if (selectedProduct) {
+        ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
+      }
+
+      ctx.fillStyle = 'rgba(212,175,55,0.5)';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('ELEVARE Revestimentos', w - 170, h - 18);
+
+      const link = document.createElement('a');
+      link.download = `elevare-simulacao-${selectedProduct?.name?.replace(/\s+/g, '-').toLowerCase() || 'ambiente'}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      console.error('Error saving image:', err);
+      const link = document.createElement('a');
+      link.download = 'elevare-simulacao.png';
+      link.href = activeImage.preview;
+      link.click();
+    }
+  }, [activeImage, closestScene, selectedProduct]);
+
   const reset = () => {
     setStep(1);
     setImages([]);
@@ -354,20 +414,29 @@ const AISimulatorTab = () => {
                   </span>
                 </div>
               </div>
-              {/* Navigation for multiple images in step 5 */}
-              {images.length > 1 && (
-                <div className="flex items-center justify-center gap-2 pb-2">
-                  {images.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveIndex(i)}
-                      className={`w-2.5 h-2.5 rounded-full transition-all ${
-                        activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Save + Navigation */}
+              <div className="flex items-center justify-between px-3 pb-2">
+                <button
+                  onClick={saveSimulationImage}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors"
+                >
+                  <Download size={14} />
+                  Salvar Imagem
+                </button>
+                {images.length > 1 && (
+                  <div className="flex items-center gap-2">
+                    {images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveIndex(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${
+                          activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
               {currentAnalysis?.recomendacao && (
                 <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
                   <div className="flex items-start gap-2">
@@ -386,9 +455,15 @@ const AISimulatorTab = () => {
                 Simulação Concluída!
               </h3>
               <p className="text-muted-foreground text-sm mb-6">
-                Gostou? Solicite um orçamento personalizado!
+                Gostou? Salve a imagem ou solicite um orçamento!
               </p>
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <button
+                  onClick={saveSimulationImage}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gold/15 text-gold rounded-xl font-medium hover:bg-gold/25 transition-colors border border-gold/30"
+                >
+                  <Download size={18} /> Salvar Imagem
+                </button>
                 <a
                   href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
                   target="_blank"
