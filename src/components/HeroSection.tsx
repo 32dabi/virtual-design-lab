@@ -1,8 +1,20 @@
 const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated gradient background (aurora boreal) */}
-      <div className="absolute inset-0 hero-gradient-animated" />
+      {/* Video background */}
+      <div className="absolute inset-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-background/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/90" />
+      </div>
 
       {/* Animated rippled lines */}
       <div className="absolute inset-0 flex justify-between px-[10%] pointer-events-none">
@@ -13,12 +25,6 @@ const HeroSection = () => {
             style={{ animationDelay: `${i * 0.7}s` }}
           />
         ))}
-      </div>
-
-      {/* Hero image overlay */}
-      <div className="absolute inset-0">
-        <img src="/images/hero-bg.png" alt="Ambiente ELEVARE" className="w-full h-full object-cover opacity-40 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/80" />
       </div>
 
       {/* Content */}
@@ -49,9 +55,9 @@ const HeroSection = () => {
         </div>
         <a
           href="/sobre"
-          className="inline-block mt-6 text-sm text-foreground/60 hover:text-gold underline underline-offset-4 transition-colors font-body"
+          className="inline-block mt-8 px-10 py-4 border-2 border-gold/40 text-gold font-semibold tracking-widest uppercase text-base rounded hover:bg-gold/10 hover:border-gold/70 transition-all duration-300"
         >
-          Conheça nossa história &gt;
+          Conheça nossa história →
         </a>
         <div className="gold-line mx-auto mt-8" />
       </div>

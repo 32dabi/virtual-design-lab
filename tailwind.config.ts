@@ -14,10 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["'Cormorant Garamond'", "serif"],
+        heading: ["'Barlow'", "sans-serif"],
         logo: ["'Eunomia'", "'Poiret One'", "cursive"],
-        subtitle: ["'Montserrat'", "sans-serif"],
-        body: ["'Montserrat'", "'Inter'", "sans-serif"],
+        subtitle: ["'Barlow'", "sans-serif"],
+        body: ["'Barlow'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
