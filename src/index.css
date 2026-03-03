@@ -54,7 +54,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', 'Montserrat', sans-serif;
   }
   html {
     scroll-behavior: smooth;
@@ -64,6 +64,15 @@
 @layer utilities {
   .font-heading {
     font-family: 'Cormorant Garamond', serif;
+  }
+  .font-logo {
+    font-family: 'Poiret One', cursive;
+  }
+  .font-subtitle {
+    font-family: 'Montserrat', sans-serif;
+  }
+  .font-body {
+    font-family: 'Montserrat', 'Inter', sans-serif;
   }
   .text-gold {
     color: hsl(var(--gold));
@@ -108,4 +117,73 @@
   width: 60px;
   height: 2px;
   background: linear-gradient(90deg, hsl(var(--green-accent)), hsl(var(--gold)), hsl(var(--green-accent)));
+}
+
+/* ======== HERO ANIMATIONS ======== */
+
+/* Option B: Moving gradient (aurora boreal) */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
+  50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hero-gradient-animated {
+  background: linear-gradient(
+    135deg,
+    #042A1B 0%,
+    #064028 15%,
+    #0B3D2E 30%,
+    #0E4D38 45%,
+    #0A5C3F 55%,
+    #0B3D2E 70%,
+    #064028 85%,
+    #042A1B 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Option C: Pulsing ripple lines */
+@keyframes ripple-pulse {
+  0%, 100% {
+    opacity: 0.03;
+    box-shadow: none;
+  }
+  50% {
+    opacity: 0.1;
+    box-shadow: 0 0 8px hsl(43 62% 52% / 0.15);
+  }
+}
+
+.ripple-line {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    hsl(43 62% 52% / 0.06) 20%,
+    hsl(43 62% 52% / 0.1) 50%,
+    hsl(43 62% 52% / 0.06) 80%,
+    transparent 100%
+  );
+  animation: ripple-pulse 4s ease-in-out infinite;
+}
+
+/* Subtle watermark overlay for images (anti print-screen) */
+.watermark-overlay {
+  position: relative;
+}
+.watermark-overlay::after {
+  content: 'ELEVARE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-family: 'Poiret One', cursive;
+  font-size: 48px;
+  color: rgba(212, 175, 55, 0.06);
+  pointer-events: none;
+  white-space: nowrap;
+  letter-spacing: 12px;
 }
