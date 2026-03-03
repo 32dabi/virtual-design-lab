@@ -1,5 +1,5 @@
-import { useState, useRef, useMemo } from 'react';
-import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { useState, useRef, useMemo, useCallback } from 'react';
+import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { products, type Product } from '@/data/products';
 import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,6 +14,17 @@ interface AnalysisResult {
   descricao_ambiente: string;
   recomendacao: string;
 }
+
+interface ImageEntry {
+  preview: string;
+  base64: string;
+  mediaType: string;
+  analysis: AnalysisResult | null;
+  analyzing: boolean;
+  error: string | null;
+}
+
+const MAX_IMAGES = 3;
 
 const SURFACE_LABELS: Record<string, string> = {
   parede_frontal: 'Parede Principal',
@@ -34,90 +45,139 @@ const STEPS = [
 
 const AISimulatorTab = () => {
   const [step, setStep] = useState(1);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<string>('image/jpeg');
+  const [images, setImages] = useState<ImageEntry[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSurfaces, setSelectedSurfaces] = useState<string[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const activeImage = images[activeIndex] || null;
+
+  // Combined analysis from all images
+  const allAnalyses = useMemo(() => images.map(i => i.analysis).filter(Boolean) as AnalysisResult[], [images]);
+
   const suggestedProducts = useMemo(() => {
-    if (!analysis) return [];
-    return analysis.sugestoes_produtos
+    if (allAnalyses.length === 0) return [];
+    const allCodes = new Set<string>();
+    allAnalyses.forEach(a => a.sugestoes_produtos.forEach(c => allCodes.add(c)));
+    return Array.from(allCodes)
       .map(code => {
         const normalized = code.replace(/[\s-]/g, '').toLowerCase();
         return products.find(p => p.code.replace(/[\s-]/g, '').toLowerCase() === normalized);
       })
       .filter(Boolean) as Product[];
-  }, [analysis]);
+  }, [allAnalyses]);
 
   const closestScene = useMemo(() => {
-    if (!selectedProduct || !analysis) return null;
-    // Try to find a scene matching this product
-    const match = roomScenes.find(s => s.productId === selectedProduct.id);
-    return match || null;
-  }, [selectedProduct, analysis]);
+    if (!selectedProduct) return null;
+    return roomScenes.find(s => s.productId === selectedProduct.id) || null;
+  }, [selectedProduct]);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const analyzeImage = useCallback(async (index: number, entries: ImageEntry[]) => {
+    const entry = entries[index];
+    if (!entry) return entries;
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Arquivo muito grande. Máximo 10MB.');
-      return;
-    }
+    const updated = [...entries];
+    updated[index] = { ...updated[index], analyzing: true, error: null };
+    setImages(updated);
 
-    setError(null);
-    const mType = file.type || 'image/jpeg';
-    setMediaType(mType);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      setImagePreview(result);
-      // Extract base64 data
-      const base64Data = result.split(',')[1];
-      setImageBase64(base64Data);
-      setStep(2);
-      analyzeImage(base64Data, mType);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const analyzeImage = async (base64: string, mType: string) => {
-    setLoading(true);
-    setError(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('analyze-room', {
-        body: { imageBase64: base64, mediaType: mType },
+        body: { imageBase64: entry.base64, mediaType: entry.mediaType },
       });
 
-      if (fnError) {
-        throw new Error(fnError.message || 'Erro ao analisar imagem');
-      }
+      if (fnError) throw new Error(fnError.message || 'Erro ao analisar imagem');
+      if (data?.error) throw new Error(data.error);
 
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      setAnalysis(data as AnalysisResult);
-      setStep(3);
+      const final = [...updated];
+      final[index] = { ...final[index], analysis: data as AnalysisResult, analyzing: false };
+      setImages(final);
+      return final;
     } catch (err: any) {
       console.error('Analysis error:', err);
-      setError(err.message || 'Erro ao analisar. Tente novamente.');
-      // Stay on step 2 but allow retry or manual
-    } finally {
-      setLoading(false);
+      const final = [...updated];
+      final[index] = { ...final[index], analyzing: false, error: err.message || 'Erro ao analisar' };
+      setImages(final);
+      return final;
+    }
+  }, []);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    const remaining = MAX_IMAGES - images.length;
+    const toProcess = files.slice(0, remaining);
+
+    if (files.length > remaining) {
+      // silently cap
+    }
+
+    const newEntries: ImageEntry[] = [];
+
+    for (const file of toProcess) {
+      if (file.size > 10 * 1024 * 1024) continue;
+
+      const mType = file.type || 'image/jpeg';
+      const result = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      newEntries.push({
+        preview: result,
+        base64: result.split(',')[1],
+        mediaType: mType,
+        analysis: null,
+        analyzing: false,
+        error: null,
+      });
+    }
+
+    if (newEntries.length === 0) return;
+
+    const allEntries = [...images, ...newEntries];
+    setImages(allEntries);
+    setActiveIndex(images.length); // focus first new image
+    setStep(2);
+
+    // Analyze sequentially
+    setLoading(true);
+    let current = allEntries;
+    for (let i = images.length; i < allEntries.length; i++) {
+      setActiveIndex(i);
+      current = await analyzeImage(i, current);
+    }
+    setLoading(false);
+
+    // If all analyzed successfully, go to step 3
+    const allDone = current.every(e => e.analysis !== null);
+    if (allDone) {
+      setStep(3);
+      setActiveIndex(0);
+    }
+
+    // Reset input
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    const updated = images.filter((_, i) => i !== index);
+    setImages(updated);
+    if (updated.length === 0) {
+      reset();
+    } else {
+      setActiveIndex(Math.min(activeIndex, updated.length - 1));
     }
   };
 
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setStep(4);
-    // Pre-select surfaces from analysis
+    // Pre-select surfaces from active analysis
+    const analysis = activeImage?.analysis;
     if (analysis?.superficies_visiveis) {
       setSelectedSurfaces(analysis.superficies_visiveis.slice(0, 2));
     }
@@ -129,142 +189,245 @@ const AISimulatorTab = () => {
     );
   };
 
-  const handleGenerate = () => {
-    setStep(5);
-  };
+  const handleGenerate = () => setStep(5);
 
   const reset = () => {
     setStep(1);
-    setImagePreview(null);
-    setImageBase64(null);
-    setAnalysis(null);
+    setImages([]);
+    setActiveIndex(0);
     setSelectedProduct(null);
     setSelectedSurfaces([]);
-    setError(null);
     setLoading(false);
   };
 
-  const whatsappMsg = selectedProduct && analysis
+  const currentAnalysis = activeImage?.analysis || allAnalyses[0] || null;
+
+  const whatsappMsg = selectedProduct && allAnalyses.length > 0
     ? encodeURIComponent(
-        `Olá! Fiz uma simulação no site da Elevare.\n\nAmbiente: ${analysis.tipo_comodo}\nProduto escolhido: ${selectedProduct.name} (${selectedProduct.code})\nSuperfície: ${selectedSurfaces.map(s => SURFACE_LABELS[s] || s).join(', ')}\n\nGostaria de um orçamento!`
+        `Olá! Fiz uma simulação no site da Elevare.\n\n${allAnalyses.map((a, i) => `Ambiente ${i + 1}: ${a.tipo_comodo}`).join('\n')}\nProduto escolhido: ${selectedProduct.name} (${selectedProduct.code})\nSuperfície: ${selectedSurfaces.map(s => SURFACE_LABELS[s] || s).join(', ')}\n\nGostaria de um orçamento!`
       )
     : '';
+
+  // Progress info for loading
+  const analyzingIndex = images.findIndex(i => i.analyzing);
+  const analyzedCount = images.filter(i => i.analysis !== null).length;
 
   return (
     <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
       {/* LEFT: Preview area */}
-      <div className="relative rounded-2xl overflow-hidden border border-border bg-card min-h-[400px] flex items-center justify-center">
-        {step === 1 && !imagePreview && (
-          <div className="text-center px-8 py-16">
-            <div className="w-20 h-20 mx-auto rounded-full bg-gold/10 flex items-center justify-center mb-6">
-              <Camera className="text-gold" size={36} />
-            </div>
-            <h3 className="text-xl font-heading font-semibold text-gold mb-2">
-              Como ficaria no SEU espaço?
-            </h3>
-            <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
-              Envie uma foto do ambiente que deseja transformar
-            </p>
-            <label className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-semibold rounded-xl cursor-pointer hover:opacity-90 transition-opacity">
-              <Upload size={18} />
-              Escolher Foto
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"
-                capture="environment"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
-            <p className="text-muted-foreground text-xs mt-4">
-              Dica: tire a foto de frente para a parede, com boa iluminação
-            </p>
-            <p className="text-muted-foreground/60 text-[11px] mt-1">
-              Aceita JPG, PNG, WEBP e fotos direto da câmera • Máx. 10MB
-            </p>
-          </div>
-        )}
-
-        {imagePreview && step < 5 && (
-          <img
-            src={imagePreview}
-            alt="Seu ambiente"
-            className="w-full h-full object-contain max-h-[500px]"
-          />
-        )}
-
-        {step === 5 && (
-          <div className="w-full h-full flex flex-col">
-            {/* Side by side: user photo + closest scene */}
-            <div className="grid grid-cols-2 gap-2 p-3 flex-1 min-h-0">
-              <div className="relative rounded-lg overflow-hidden">
-                <img src={imagePreview!} alt="Seu ambiente" className="w-full h-full object-cover" />
-                <span className="absolute top-2 left-2 bg-background/80 text-foreground text-[10px] px-2 py-0.5 rounded-full">
-                  Seu Ambiente
-                </span>
-              </div>
-              <div className="relative rounded-lg overflow-hidden">
-                {closestScene ? (
-                  <img src={closestScene.image} alt={closestScene.productName} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full bg-card flex items-center justify-center">
-                    <ImageIcon className="text-muted-foreground" size={40} />
-                  </div>
+      <div className="relative rounded-2xl overflow-hidden border border-border bg-card min-h-[400px] flex flex-col">
+        {/* Thumbnails bar (when images exist) */}
+        {images.length > 0 && step < 6 && (
+          <div className="flex items-center gap-2 p-3 border-b border-border bg-card/50">
+            {images.map((img, i) => (
+              <div key={i} className="relative group">
+                <button
+                  onClick={() => setActiveIndex(i)}
+                  className={`w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${
+                    activeIndex === i ? 'border-gold shadow-lg shadow-gold/20' : 'border-border hover:border-gold/40'
+                  }`}
+                >
+                  <img src={img.preview} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                  {img.analyzing && (
+                    <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
+                      <Loader2 size={14} className="text-gold animate-spin" />
+                    </div>
+                  )}
+                  {img.analysis && (
+                    <div className="absolute bottom-0.5 right-0.5">
+                      <CheckCircle size={12} className="text-green-500" />
+                    </div>
+                  )}
+                  {img.error && (
+                    <div className="absolute bottom-0.5 right-0.5">
+                      <X size={12} className="text-destructive" />
+                    </div>
+                  )}
+                </button>
+                {step <= 2 && (
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={10} />
+                  </button>
                 )}
-                <span className="absolute top-2 left-2 bg-gold/90 text-background text-[10px] px-2 py-0.5 rounded-full font-medium">
-                  Com {selectedProduct?.name}
-                </span>
               </div>
-            </div>
-            {/* AI recommendation */}
-            {analysis?.recomendacao && (
-              <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
-                <div className="flex items-start gap-2">
-                  <Sparkles size={14} className="text-gold mt-0.5 shrink-0" />
-                  <p className="text-foreground/80 text-sm">{analysis.recomendacao}</p>
-                </div>
-              </div>
+            ))}
+            {images.length < MAX_IMAGES && step <= 2 && (
+              <label className="w-14 h-14 rounded-lg border-2 border-dashed border-gold/30 flex items-center justify-center cursor-pointer hover:border-gold/60 hover:bg-gold/5 transition-all">
+                <Plus size={18} className="text-gold/60" />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/heic"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
             )}
           </div>
         )}
 
-        {step >= 6 && (
-          <div className="text-center px-8 py-16">
-            <CheckCircle className="text-gold mx-auto mb-4" size={48} />
-            <h3 className="text-xl font-heading font-semibold text-gold mb-2">
-              Simulação Concluída!
-            </h3>
-            <p className="text-muted-foreground text-sm mb-6">
-              Gostou? Solicite um orçamento personalizado!
-            </p>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a
-                href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors"
-              >
-                <MessageCircle size={18} /> Solicitar Orçamento
-              </a>
-              <button
-                onClick={reset}
-                className="flex items-center justify-center gap-2 px-6 py-3 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors"
-              >
-                <RefreshCw size={16} /> Nova Simulação
-              </button>
+        {/* Main preview */}
+        <div className="flex-1 flex items-center justify-center relative">
+          {step === 1 && images.length === 0 && (
+            <div className="text-center px-8 py-16">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gold/10 flex items-center justify-center mb-6">
+                <Camera className="text-gold" size={36} />
+              </div>
+              <h3 className="text-xl font-heading font-semibold text-gold mb-2">
+                Como ficaria no SEU espaço?
+              </h3>
+              <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
+                Envie até {MAX_IMAGES} fotos dos ambientes que deseja transformar
+              </p>
+              <label className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-semibold rounded-xl cursor-pointer hover:opacity-90 transition-opacity">
+                <Upload size={18} />
+                Escolher Fotos
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/heic"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+              <p className="text-muted-foreground text-xs mt-4">
+                Dica: tire a foto de frente para a parede, com boa iluminação
+              </p>
+              <p className="text-muted-foreground/60 text-[11px] mt-1">
+                Aceita JPG, PNG, WEBP • Máx. 10MB por foto • Até {MAX_IMAGES} fotos
+              </p>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Loading overlay */}
-        {loading && (
-          <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10">
-            <Loader2 className="text-gold animate-spin mb-4" size={40} />
-            <p className="text-gold font-medium">Nossa IA está analisando seu ambiente...</p>
-            <p className="text-muted-foreground text-sm mt-1">Isso leva alguns segundos</p>
-          </div>
-        )}
+          {activeImage && step >= 2 && step < 5 && (
+            <>
+              <img
+                src={activeImage.preview}
+                alt="Seu ambiente"
+                className="w-full h-full object-contain max-h-[500px]"
+              />
+              {/* Navigation arrows */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
+                    disabled={activeIndex === 0}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button
+                    onClick={() => setActiveIndex(i => Math.min(images.length - 1, i + 1))}
+                    disabled={activeIndex === images.length - 1}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </>
+              )}
+            </>
+          )}
+
+          {step === 5 && activeImage && (
+            <div className="w-full h-full flex flex-col">
+              <div className="grid grid-cols-2 gap-2 p-3 flex-1 min-h-0">
+                <div className="relative rounded-lg overflow-hidden">
+                  <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-cover" />
+                  <span className="absolute top-2 left-2 bg-background/80 text-foreground text-[10px] px-2 py-0.5 rounded-full">
+                    Seu Ambiente {images.length > 1 ? `(${activeIndex + 1}/${images.length})` : ''}
+                  </span>
+                </div>
+                <div className="relative rounded-lg overflow-hidden">
+                  {closestScene ? (
+                    <img src={closestScene.image} alt={closestScene.productName} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-card flex items-center justify-center">
+                      <ImageIcon className="text-muted-foreground" size={40} />
+                    </div>
+                  )}
+                  <span className="absolute top-2 left-2 bg-gold/90 text-background text-[10px] px-2 py-0.5 rounded-full font-medium">
+                    Com {selectedProduct?.name}
+                  </span>
+                </div>
+              </div>
+              {/* Navigation for multiple images in step 5 */}
+              {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2 pb-2">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveIndex(i)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${
+                        activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+              {currentAnalysis?.recomendacao && (
+                <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Sparkles size={14} className="text-gold mt-0.5 shrink-0" />
+                    <p className="text-foreground/80 text-sm">{currentAnalysis.recomendacao}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {step >= 6 && (
+            <div className="text-center px-8 py-16">
+              <CheckCircle className="text-gold mx-auto mb-4" size={48} />
+              <h3 className="text-xl font-heading font-semibold text-gold mb-2">
+                Simulação Concluída!
+              </h3>
+              <p className="text-muted-foreground text-sm mb-6">
+                Gostou? Solicite um orçamento personalizado!
+              </p>
+              <div className="flex flex-col gap-3 max-w-xs mx-auto">
+                <a
+                  href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors"
+                >
+                  <MessageCircle size={18} /> Solicitar Orçamento
+                </a>
+                <button
+                  onClick={reset}
+                  className="flex items-center justify-center gap-2 px-6 py-3 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors"
+                >
+                  <RefreshCw size={16} /> Nova Simulação
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Loading overlay */}
+          {loading && (
+            <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10">
+              <Loader2 className="text-gold animate-spin mb-4" size={40} />
+              <p className="text-gold font-medium">
+                {images.length > 1
+                  ? `Analisando foto ${analyzingIndex >= 0 ? analyzingIndex + 1 : analyzedCount + 1} de ${images.length}...`
+                  : 'Nossa IA está analisando seu ambiente...'}
+              </p>
+              <p className="text-muted-foreground text-sm mt-1">Isso leva alguns segundos por foto</p>
+              {images.length > 1 && (
+                <div className="w-48 h-1.5 bg-muted rounded-full mt-3 overflow-hidden">
+                  <div
+                    className="h-full bg-gold rounded-full transition-all duration-500"
+                    style={{ width: `${(analyzedCount / images.length) * 100}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* RIGHT: Controls */}
@@ -290,10 +453,12 @@ const AISimulatorTab = () => {
           ))}
         </div>
 
-        {/* Error */}
-        {error && (
+        {/* Errors from individual images */}
+        {images.some(i => i.error) && (
           <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
-            {error}
+            {images.filter(i => i.error).map((img, idx) => (
+              <p key={idx}>Foto {images.indexOf(img) + 1}: {img.error}</p>
+            ))}
             <button onClick={reset} className="ml-2 underline">Tentar novamente</button>
           </div>
         )}
@@ -302,7 +467,7 @@ const AISimulatorTab = () => {
         {step === 1 && (
           <div className="text-center py-4">
             <p className="text-muted-foreground text-sm">
-              Envie uma foto para começar a simulação com IA
+              Envie até {MAX_IMAGES} fotos para começar a simulação com IA
             </p>
           </div>
         )}
@@ -310,12 +475,14 @@ const AISimulatorTab = () => {
         {/* Step 2: Loading / waiting */}
         {step === 2 && loading && (
           <div className="text-center py-4">
-            <p className="text-muted-foreground text-sm">Aguarde a análise...</p>
+            <p className="text-muted-foreground text-sm">
+              Aguarde a análise das {images.length} foto{images.length > 1 ? 's' : ''}...
+            </p>
           </div>
         )}
 
-        {/* Step 2 with error: manual fallback */}
-        {step === 2 && !loading && error && (
+        {/* Step 2 with errors: manual fallback */}
+        {step === 2 && !loading && images.some(i => i.error) && (
           <div className="space-y-3">
             <p className="text-foreground text-sm font-medium">Selecione o tipo de ambiente manualmente:</p>
             <div className="grid grid-cols-2 gap-2">
@@ -323,17 +490,24 @@ const AISimulatorTab = () => {
                 <button
                   key={tipo}
                   onClick={() => {
-                    setAnalysis({
-                      tipo_comodo: tipo,
-                      categoria: ['escritório', 'recepção', 'restaurante'].includes(tipo) ? 'comercial' : 'residencial',
-                      superficies_visiveis: ['parede_frontal', 'parede_lateral'],
-                      iluminacao: 'mista',
-                      estilo_atual: 'moderno',
-                      sugestoes_produtos: ['LTM 88696', 'KT 1073', 'LTM88634'],
-                      descricao_ambiente: `Ambiente ${tipo}`,
-                      recomendacao: `Para um ${tipo}, recomendamos painéis que combinem com o estilo do espaço.`,
-                    });
-                    setError(null);
+                    // Apply manual analysis to images without analysis
+                    const updated = images.map(img =>
+                      img.analysis ? img : {
+                        ...img,
+                        error: null,
+                        analysis: {
+                          tipo_comodo: tipo,
+                          categoria: ['escritório', 'recepção', 'restaurante'].includes(tipo) ? 'comercial' : 'residencial',
+                          superficies_visiveis: ['parede_frontal', 'parede_lateral'],
+                          iluminacao: 'mista',
+                          estilo_atual: 'moderno',
+                          sugestoes_produtos: ['LTM 88696', 'KT 1073', 'LTM88634'],
+                          descricao_ambiente: `Ambiente ${tipo}`,
+                          recomendacao: `Para um ${tipo}, recomendamos painéis que combinem com o estilo do espaço.`,
+                        } as AnalysisResult,
+                      }
+                    );
+                    setImages(updated);
                     setStep(3);
                   }}
                   className="px-3 py-2 rounded-lg text-xs font-medium bg-muted/50 text-muted-foreground hover:text-gold hover:bg-gold/10 transition-all capitalize"
@@ -346,23 +520,31 @@ const AISimulatorTab = () => {
         )}
 
         {/* Step 3: Analysis result + product selection */}
-        {step >= 3 && analysis && (
+        {step >= 3 && currentAnalysis && (
           <div className="space-y-4">
-            {/* Analysis summary */}
+            {/* Analysis summary for active image */}
             <div className="p-3 rounded-lg bg-gold/5 border border-gold/15">
-              <p className="text-gold text-sm font-medium mb-1">
-                Ambiente identificado: <span className="capitalize">{analysis.tipo_comodo}</span>
-              </p>
-              <p className="text-muted-foreground text-xs">{analysis.descricao_ambiente}</p>
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-gold text-sm font-medium">
+                  {images.length > 1 ? `Foto ${activeIndex + 1}: ` : ''}
+                  <span className="capitalize">{currentAnalysis.tipo_comodo}</span>
+                </p>
+                {images.length > 1 && (
+                  <span className="text-[10px] text-muted-foreground">
+                    {allAnalyses.length} ambiente{allAnalyses.length > 1 ? 's' : ''} analisado{allAnalyses.length > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+              <p className="text-muted-foreground text-xs">{currentAnalysis.descricao_ambiente}</p>
               <div className="flex gap-2 mt-2 flex-wrap">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70">
-                  {analysis.iluminacao}
+                  {currentAnalysis.iluminacao}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70 capitalize">
-                  {analysis.estilo_atual}
+                  {currentAnalysis.estilo_atual}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/15 text-gold capitalize">
-                  {analysis.categoria}
+                  {currentAnalysis.categoria}
                 </span>
               </div>
             </div>
@@ -370,7 +552,7 @@ const AISimulatorTab = () => {
             {step === 3 && (
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-                  Produtos recomendados para seu espaço
+                  Produtos recomendados para {images.length > 1 ? 'seus espaços' : 'seu espaço'}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {suggestedProducts.map(p => (
@@ -391,7 +573,6 @@ const AISimulatorTab = () => {
                     </button>
                   ))}
                 </div>
-                {/* All products toggle */}
                 <details className="mt-3">
                   <summary className="text-xs text-gold/70 cursor-pointer hover:text-gold">
                     Ver todos os produtos
@@ -415,15 +596,15 @@ const AISimulatorTab = () => {
         )}
 
         {/* Step 4: Surface selection */}
-        {step === 4 && analysis && (
+        {step === 4 && currentAnalysis && (
           <div className="space-y-4">
             <div>
               <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
                 Superfícies disponíveis para revestimento
               </p>
               <div className="space-y-2">
-                {(analysis.superficies_visiveis.length > 0
-                  ? analysis.superficies_visiveis
+                {(currentAnalysis.superficies_visiveis.length > 0
+                  ? currentAnalysis.superficies_visiveis
                   : ['parede_frontal', 'parede_lateral', 'teto']
                 ).map(surface => (
                   <button
