@@ -4,6 +4,9 @@ import { downloadWithWatermark } from '@/lib/watermark';
 import { products, type Product } from '@/data/products';
 import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
+import MeasurementStep from './MeasurementStep';
+import ProjectSummaryCard from './ProjectSummaryCard';
+import { calculatePieces, getSurfaceTypeFromAnalysis, buildWhatsAppMessage, type MeasurementData, type CalculationResult } from '@/lib/pieceCalculator';
 
 interface AnalysisResult {
   tipo_comodo: string;
@@ -40,8 +43,9 @@ const STEPS = [
   { num: 2, label: 'Análise IA' },
   { num: 3, label: 'Produto' },
   { num: 4, label: 'Superfície' },
-  { num: 5, label: 'Simulação' },
-  { num: 6, label: 'Orçamento' },
+  { num: 5, label: 'Medidas' },
+  { num: 6, label: 'Simulação' },
+  { num: 7, label: 'Orçamento' },
 ];
 
 const AISimulatorTab = () => {
@@ -51,11 +55,12 @@ const AISimulatorTab = () => {
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedSurfaces, setSelectedSurfaces] = useState<string[]>([]);
+  const [measurements, setMeasurements] = useState<MeasurementData | null>(null);
+  const [calculation, setCalculation] = useState<CalculationResult | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const activeImage = images[activeIndex] || null;
 
-  // Combined analysis from all images
   const allAnalyses = useMemo(() => images.map(i => i.analysis).filter(Boolean) as AnalysisResult[], [images]);
 
   const suggestedProducts = useMemo(() => {
@@ -111,29 +116,19 @@ const AISimulatorTab = () => {
     const remaining = MAX_IMAGES - images.length;
     const toProcess = files.slice(0, remaining);
 
-    if (files.length > remaining) {
-      // silently cap
-    }
-
     const newEntries: ImageEntry[] = [];
 
     for (const file of toProcess) {
       if (file.size > 10 * 1024 * 1024) continue;
-
       const mType = file.type || 'image/jpeg';
       const result = await new Promise<string>((resolve) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
         reader.readAsDataURL(file);
       });
-
       newEntries.push({
-        preview: result,
-        base64: result.split(',')[1],
-        mediaType: mType,
-        analysis: null,
-        analyzing: false,
-        error: null,
+        preview: result, base64: result.split(',')[1], mediaType: mType,
+        analysis: null, analyzing: false, error: null,
       });
     }
 
@@ -141,10 +136,9 @@ const AISimulatorTab = () => {
 
     const allEntries = [...images, ...newEntries];
     setImages(allEntries);
-    setActiveIndex(images.length); // focus first new image
+    setActiveIndex(images.length);
     setStep(2);
 
-    // Analyze sequentially
     setLoading(true);
     let current = allEntries;
     for (let i = images.length; i < allEntries.length; i++) {
@@ -153,23 +147,15 @@ const AISimulatorTab = () => {
     }
     setLoading(false);
 
-    // If all analyzed successfully, go to step 3
     const allDone = current.every(e => e.analysis !== null);
-    if (allDone) {
-      setStep(3);
-      setActiveIndex(0);
-    }
-
-    // Reset input
+    if (allDone) { setStep(3); setActiveIndex(0); }
     if (fileRef.current) fileRef.current.value = '';
   };
 
   const removeImage = (index: number) => {
     const updated = images.filter((_, i) => i !== index);
     setImages(updated);
-    if (updated.length === 0) {
-      reset();
-    } else {
+    if (updated.length === 0) { reset(); } else {
       setActiveIndex(Math.min(activeIndex, updated.length - 1));
     }
   };
@@ -177,7 +163,6 @@ const AISimulatorTab = () => {
   const handleSelectProduct = (product: Product) => {
     setSelectedProduct(product);
     setStep(4);
-    // Pre-select surfaces from active analysis
     const analysis = activeImage?.analysis;
     if (analysis?.superficies_visiveis) {
       setSelectedSurfaces(analysis.superficies_visiveis.slice(0, 2));
@@ -190,7 +175,22 @@ const AISimulatorTab = () => {
     );
   };
 
-  const handleGenerate = () => setStep(5);
+  const handleGoToMeasurements = () => setStep(5);
+
+  const handleMeasurementSubmit = (data: MeasurementData) => {
+    setMeasurements(data);
+    if (selectedProduct) {
+      const result = calculatePieces(data, selectedProduct);
+      setCalculation(result);
+    }
+    setStep(6);
+  };
+
+  const handleSkipMeasurements = () => {
+    setMeasurements({ surfaceType: 'parede', width: 0, height: 0, wallCount: 1, deductDoors: false, doorCount: 0, doorSize: { width: 0.8, height: 2.1 }, deductWindows: false, windowCount: 0, windowSize: { width: 1.2, height: 1 }, skipMeasurements: true });
+    setCalculation(null);
+    setStep(6);
+  };
 
   const saveSimulationImage = useCallback(async () => {
     if (!activeImage) return;
@@ -210,20 +210,14 @@ const AISimulatorTab = () => {
     try {
       const userImg = await loadImg(activeImage.preview);
       const productImg = closestScene ? await loadImg(closestScene.image) : null;
-
-      const w = 1200;
-      const h = 600;
-      canvas.width = w;
-      canvas.height = h;
+      const w = 1200; const h = 600;
+      canvas.width = w; canvas.height = h;
 
       ctx.fillStyle = '#0D1F15';
       ctx.fillRect(0, 0, w, h);
-
       const halfW = w / 2 - 10;
       ctx.drawImage(userImg, 5, 5, halfW, h - 10);
-      if (productImg) {
-        ctx.drawImage(productImg, w / 2 + 5, 5, halfW, h - 10);
-      }
+      if (productImg) ctx.drawImage(productImg, w / 2 + 5, 5, halfW, h - 10);
 
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.fillRect(5, h - 40, halfW, 35);
@@ -231,11 +225,8 @@ const AISimulatorTab = () => {
       ctx.fillStyle = '#D4AF37';
       ctx.font = 'bold 14px Montserrat, sans-serif';
       ctx.fillText('Seu Ambiente', 15, h - 18);
-      if (selectedProduct) {
-        ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
-      }
+      if (selectedProduct) ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
 
-      // Diagonal watermark
       ctx.save();
       ctx.globalAlpha = 0.06;
       ctx.font = "48px 'Poiret One', sans-serif";
@@ -243,13 +234,10 @@ const AISimulatorTab = () => {
       ctx.translate(w / 2, h / 2);
       ctx.rotate(-30 * Math.PI / 180);
       for (let y = -h; y < h; y += 120) {
-        for (let x = -w; x < w; x += 400) {
-          ctx.fillText('ELEVARE', x, y);
-        }
+        for (let x = -w; x < w; x += 400) ctx.fillText('ELEVARE', x, y);
       }
       ctx.restore();
 
-      // Bottom bar
       ctx.fillStyle = 'rgba(11,61,46,0.85)';
       ctx.fillRect(0, h - 60, w, 60);
       ctx.font = "14px 'Montserrat', sans-serif";
@@ -266,9 +254,7 @@ const AISimulatorTab = () => {
       link.click();
     } catch (err) {
       console.error('Error saving image:', err);
-      if (activeImage.preview) {
-        downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
-      }
+      if (activeImage.preview) downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
     }
   }, [activeImage, closestScene, selectedProduct]);
 
@@ -278,6 +264,8 @@ const AISimulatorTab = () => {
     setActiveIndex(0);
     setSelectedProduct(null);
     setSelectedSurfaces([]);
+    setMeasurements(null);
+    setCalculation(null);
     setLoading(false);
   };
 
@@ -285,20 +273,31 @@ const AISimulatorTab = () => {
 
   const whatsappMsg = selectedProduct && allAnalyses.length > 0
     ? encodeURIComponent(
-        `Olá! Fiz uma simulação no site da Elevare.\n\n${allAnalyses.map((a, i) => `Ambiente ${i + 1}: ${a.tipo_comodo}`).join('\n')}\nProduto escolhido: ${selectedProduct.name} (${selectedProduct.code})\nSuperfície: ${selectedSurfaces.map(s => SURFACE_LABELS[s] || s).join(', ')}\n\nGostaria de um orçamento!`
+        buildWhatsAppMessage(
+          allAnalyses[0],
+          selectedProduct,
+          selectedSurfaces,
+          measurements,
+          calculation,
+          SURFACE_LABELS,
+        )
       )
     : '';
 
-  // Progress info for loading
   const analyzingIndex = images.findIndex(i => i.analyzing);
   const analyzedCount = images.filter(i => i.analysis !== null).length;
+
+  const surfaceType = useMemo(() => {
+    if (!currentAnalysis) return 'parede' as const;
+    return getSurfaceTypeFromAnalysis(selectedSurfaces);
+  }, [currentAnalysis, selectedSurfaces]);
 
   return (
     <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6">
       {/* LEFT: Preview area */}
       <div className="relative rounded-2xl overflow-hidden border border-border bg-card min-h-[400px] flex flex-col">
-        {/* Thumbnails bar (when images exist) */}
-        {images.length > 0 && step < 6 && (
+        {/* Thumbnails bar */}
+        {images.length > 0 && step < 7 && (
           <div className="flex items-center gap-2 p-3 border-b border-border bg-card/50">
             {images.map((img, i) => (
               <div key={i} className="relative group">
@@ -338,13 +337,7 @@ const AISimulatorTab = () => {
             {images.length < MAX_IMAGES && step <= 2 && (
               <label className="w-14 h-14 rounded-lg border-2 border-dashed border-gold/30 flex items-center justify-center cursor-pointer hover:border-gold/60 hover:bg-gold/5 transition-all">
                 <Plus size={18} className="text-gold/60" />
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/heic"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/heic" multiple className="hidden" onChange={handleFileChange} />
               </label>
             )}
           </div>
@@ -366,46 +359,24 @@ const AISimulatorTab = () => {
               <label className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-semibold rounded-xl cursor-pointer hover:opacity-90 transition-opacity">
                 <Upload size={18} />
                 Escolher Fotos
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/heic"
-                  multiple
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+                <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/heic" multiple className="hidden" onChange={handleFileChange} />
               </label>
-              <p className="text-muted-foreground text-xs mt-4">
-                Dica: tire a foto de frente para a parede, com boa iluminação
-              </p>
-              <p className="text-muted-foreground/60 text-[11px] mt-1">
-                Aceita JPG, PNG, WEBP • Máx. 10MB por foto • Até {MAX_IMAGES} fotos
-              </p>
+              <p className="text-muted-foreground text-xs mt-4">Dica: tire a foto de frente para a parede, com boa iluminação</p>
+              <p className="text-muted-foreground/60 text-[11px] mt-1">Aceita JPG, PNG, WEBP • Máx. 10MB por foto • Até {MAX_IMAGES} fotos</p>
             </div>
           )}
 
-          {activeImage && step >= 2 && step < 5 && (
+          {activeImage && step >= 2 && step <= 5 && (
             <>
-              <img
-                src={activeImage.preview}
-                alt="Seu ambiente"
-                className="w-full h-full object-contain max-h-[500px]"
-              />
-              {/* Navigation arrows */}
+              <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-contain max-h-[500px]" />
               {images.length > 1 && (
                 <>
-                  <button
-                    onClick={() => setActiveIndex(i => Math.max(0, i - 1))}
-                    disabled={activeIndex === 0}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all"
-                  >
+                  <button onClick={() => setActiveIndex(i => Math.max(0, i - 1))} disabled={activeIndex === 0}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all">
                     <ChevronLeft size={16} />
                   </button>
-                  <button
-                    onClick={() => setActiveIndex(i => Math.min(images.length - 1, i + 1))}
-                    disabled={activeIndex === images.length - 1}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all"
-                  >
+                  <button onClick={() => setActiveIndex(i => Math.min(images.length - 1, i + 1))} disabled={activeIndex === images.length - 1}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background/80 flex items-center justify-center text-foreground hover:bg-background disabled:opacity-30 transition-all">
                     <ChevronRight size={16} />
                   </button>
                 </>
@@ -413,7 +384,7 @@ const AISimulatorTab = () => {
             </>
           )}
 
-          {step === 5 && activeImage && (
+          {step === 6 && activeImage && (
             <div className="w-full h-full flex flex-col">
               <div className="grid grid-cols-2 gap-2 p-3 flex-1 min-h-0">
                 <div className="relative rounded-lg overflow-hidden">
@@ -435,25 +406,16 @@ const AISimulatorTab = () => {
                   </span>
                 </div>
               </div>
-              {/* Save + Navigation */}
               <div className="flex items-center justify-between px-3 pb-2">
-                <button
-                  onClick={saveSimulationImage}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors"
-                >
-                  <Download size={14} />
-                  Salvar Imagem
+                <button onClick={saveSimulationImage}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors">
+                  <Download size={14} /> Salvar Imagem
                 </button>
                 {images.length > 1 && (
                   <div className="flex items-center gap-2">
                     {images.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveIndex(i)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${
-                          activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-                        }`}
-                      />
+                      <button key={i} onClick={() => setActiveIndex(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} />
                     ))}
                   </div>
                 )}
@@ -469,7 +431,7 @@ const AISimulatorTab = () => {
             </div>
           )}
 
-          {step >= 6 && (
+          {step >= 7 && (
             <div className="text-center px-8 py-16">
               <CheckCircle className="text-gold mx-auto mb-4" size={48} />
               <h3 className="text-xl font-heading font-semibold text-gold mb-2">
@@ -479,31 +441,26 @@ const AISimulatorTab = () => {
                 Gostou? Salve a imagem ou solicite um orçamento!
               </p>
               <div className="flex flex-col gap-3 max-w-xs mx-auto">
-                <button
-                  onClick={saveSimulationImage}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gold/15 text-gold rounded-xl font-medium hover:bg-gold/25 transition-colors border border-gold/30"
-                >
-                  <Download size={18} /> Salvar Imagem
+                <button onClick={saveSimulationImage}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gold/15 text-gold rounded-xl font-medium hover:bg-gold/25 transition-colors border border-gold/30">
+                  <Download size={18} /> Baixar Simulação
                 </button>
-                <a
-                  href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors"
-                >
-                  <MessageCircle size={18} /> Solicitar Orçamento
+                <a href={`https://wa.me/5586999999999?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
+                  <MessageCircle size={18} /> Solicitar Orçamento via WhatsApp
                 </a>
-                <button
-                  onClick={reset}
-                  className="flex items-center justify-center gap-2 px-6 py-3 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors"
-                >
-                  <RefreshCw size={16} /> Nova Simulação
+                <button onClick={() => { setStep(3); setMeasurements(null); setCalculation(null); }}
+                  className="flex items-center justify-center gap-2 px-6 py-3 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors">
+                  <RefreshCw size={16} /> Refazer com outro produto
+                </button>
+                <button onClick={reset}
+                  className="flex items-center justify-center gap-2 px-6 py-2 text-muted-foreground hover:text-gold text-sm transition-colors">
+                  <RefreshCw size={14} /> Nova Simulação
                 </button>
               </div>
             </div>
           )}
 
-          {/* Loading overlay */}
           {loading && (
             <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10">
               <Loader2 className="text-gold animate-spin mb-4" size={40} />
@@ -515,10 +472,7 @@ const AISimulatorTab = () => {
               <p className="text-muted-foreground text-sm mt-1">Isso leva alguns segundos por foto</p>
               {images.length > 1 && (
                 <div className="w-48 h-1.5 bg-muted rounded-full mt-3 overflow-hidden">
-                  <div
-                    className="h-full bg-gold rounded-full transition-all duration-500"
-                    style={{ width: `${(analyzedCount / images.length) * 100}%` }}
-                  />
+                  <div className="h-full bg-gold rounded-full transition-all duration-500" style={{ width: `${(analyzedCount / images.length) * 100}%` }} />
                 </div>
               )}
             </div>
@@ -527,29 +481,23 @@ const AISimulatorTab = () => {
       </div>
 
       {/* RIGHT: Controls */}
-      <div className="glass-card rounded-2xl p-5 space-y-5">
+      <div className="glass-card rounded-2xl p-5 space-y-5 max-h-[700px] overflow-y-auto">
         {/* Steps indicator */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-2">
+        <div className="flex items-center gap-0.5 overflow-x-auto pb-2">
           {STEPS.map(s => (
-            <div key={s.num} className="flex items-center gap-1 shrink-0">
-              <div
-                className={`w-7 h-7 rounded-full text-[11px] font-bold flex items-center justify-center transition-all ${
-                  step >= s.num
-                    ? 'bg-gold text-background'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
+            <div key={s.num} className="flex items-center gap-0.5 shrink-0">
+              <div className={`w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${
+                step >= s.num ? 'bg-gold text-background' : 'bg-muted text-muted-foreground'
+              }`}>
                 {step > s.num ? '✓' : s.num}
               </div>
-              <span className={`text-[10px] ${step >= s.num ? 'text-gold' : 'text-muted-foreground'}`}>
-                {s.label}
-              </span>
-              {s.num < 6 && <div className={`w-3 h-px ${step > s.num ? 'bg-gold' : 'bg-border'}`} />}
+              <span className={`text-[9px] ${step >= s.num ? 'text-gold' : 'text-muted-foreground'}`}>{s.label}</span>
+              {s.num < 7 && <div className={`w-2 h-px ${step > s.num ? 'bg-gold' : 'bg-border'}`} />}
             </div>
           ))}
         </div>
 
-        {/* Errors from individual images */}
+        {/* Errors */}
         {images.some(i => i.error) && (
           <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive text-sm">
             {images.filter(i => i.error).map((img, idx) => (
@@ -559,55 +507,39 @@ const AISimulatorTab = () => {
           </div>
         )}
 
-        {/* Step 1: Upload prompt */}
+        {/* Step 1 */}
         {step === 1 && (
           <div className="text-center py-4">
-            <p className="text-muted-foreground text-sm">
-              Envie até {MAX_IMAGES} fotos para começar a simulação com IA
-            </p>
+            <p className="text-muted-foreground text-sm">Envie até {MAX_IMAGES} fotos para começar a simulação com IA</p>
           </div>
         )}
 
-        {/* Step 2: Loading / waiting */}
+        {/* Step 2 loading */}
         {step === 2 && loading && (
           <div className="text-center py-4">
-            <p className="text-muted-foreground text-sm">
-              Aguarde a análise das {images.length} foto{images.length > 1 ? 's' : ''}...
-            </p>
+            <p className="text-muted-foreground text-sm">Aguarde a análise das {images.length} foto{images.length > 1 ? 's' : ''}...</p>
           </div>
         )}
 
-        {/* Step 2 with errors: manual fallback */}
+        {/* Step 2 with errors */}
         {step === 2 && !loading && images.some(i => i.error) && (
           <div className="space-y-3">
             <p className="text-foreground text-sm font-medium">Selecione o tipo de ambiente manualmente:</p>
             <div className="grid grid-cols-2 gap-2">
               {['sala', 'quarto', 'cozinha', 'banheiro', 'escritório', 'recepção', 'varanda', 'restaurante'].map(tipo => (
-                <button
-                  key={tipo}
-                  onClick={() => {
-                    // Apply manual analysis to images without analysis
-                    const updated = images.map(img =>
-                      img.analysis ? img : {
-                        ...img,
-                        error: null,
-                        analysis: {
-                          tipo_comodo: tipo,
-                          categoria: ['escritório', 'recepção', 'restaurante'].includes(tipo) ? 'comercial' : 'residencial',
-                          superficies_visiveis: ['parede_frontal', 'parede_lateral'],
-                          iluminacao: 'mista',
-                          estilo_atual: 'moderno',
-                          sugestoes_produtos: ['LTM 88696', 'KT 1073', 'LTM88634'],
-                          descricao_ambiente: `Ambiente ${tipo}`,
-                          recomendacao: `Para um ${tipo}, recomendamos painéis que combinem com o estilo do espaço.`,
-                        } as AnalysisResult,
-                      }
-                    );
-                    setImages(updated);
-                    setStep(3);
-                  }}
-                  className="px-3 py-2 rounded-lg text-xs font-medium bg-muted/50 text-muted-foreground hover:text-gold hover:bg-gold/10 transition-all capitalize"
-                >
+                <button key={tipo} onClick={() => {
+                  const updated = images.map(img => img.analysis ? img : {
+                    ...img, error: null,
+                    analysis: {
+                      tipo_comodo: tipo, categoria: ['escritório', 'recepção', 'restaurante'].includes(tipo) ? 'comercial' : 'residencial',
+                      superficies_visiveis: ['parede_frontal', 'parede_lateral'], iluminacao: 'mista', estilo_atual: 'moderno',
+                      sugestoes_produtos: ['LTM 88696', 'KT 1073', 'LTM88634'], descricao_ambiente: `Ambiente ${tipo}`,
+                      recomendacao: `Para um ${tipo}, recomendamos painéis que combinem com o estilo do espaço.`,
+                    } as AnalysisResult,
+                  });
+                  setImages(updated); setStep(3);
+                }}
+                  className="px-3 py-2 rounded-lg text-xs font-medium bg-muted/50 text-muted-foreground hover:text-gold hover:bg-gold/10 transition-all capitalize">
                   {tipo}
                 </button>
               ))}
@@ -615,10 +547,9 @@ const AISimulatorTab = () => {
           </div>
         )}
 
-        {/* Step 3: Analysis result + product selection */}
+        {/* Step 3+: Analysis summary */}
         {step >= 3 && currentAnalysis && (
           <div className="space-y-4">
-            {/* Analysis summary for active image */}
             <div className="p-3 rounded-lg bg-gold/5 border border-gold/15">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-gold text-sm font-medium">
@@ -633,18 +564,13 @@ const AISimulatorTab = () => {
               </div>
               <p className="text-muted-foreground text-xs">{currentAnalysis.descricao_ambiente}</p>
               <div className="flex gap-2 mt-2 flex-wrap">
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70">
-                  {currentAnalysis.iluminacao}
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70 capitalize">
-                  {currentAnalysis.estilo_atual}
-                </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/15 text-gold capitalize">
-                  {currentAnalysis.categoria}
-                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70">{currentAnalysis.iluminacao}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-foreground/70 capitalize">{currentAnalysis.estilo_atual}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-gold/15 text-gold capitalize">{currentAnalysis.categoria}</span>
               </div>
             </div>
 
+            {/* Step 3: Product selection */}
             {step === 3 && (
               <div>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
@@ -652,15 +578,10 @@ const AISimulatorTab = () => {
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {suggestedProducts.map(p => (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSelectProduct(p)}
+                    <button key={p.id} onClick={() => handleSelectProduct(p)}
                       className={`flex items-center gap-2 p-2 rounded-lg text-left transition-all border ${
-                        selectedProduct?.id === p.id
-                          ? 'border-gold bg-gold/10'
-                          : 'border-border hover:border-gold/40'
-                      }`}
-                    >
+                        selectedProduct?.id === p.id ? 'border-gold bg-gold/10' : 'border-border hover:border-gold/40'
+                      }`}>
                       <div className="w-8 h-8 rounded-full border border-gold/20 shrink-0" style={{ backgroundColor: p.color }} />
                       <div className="min-w-0">
                         <p className="text-foreground text-xs font-medium truncate">{p.name}</p>
@@ -670,16 +591,11 @@ const AISimulatorTab = () => {
                   ))}
                 </div>
                 <details className="mt-3">
-                  <summary className="text-xs text-gold/70 cursor-pointer hover:text-gold">
-                    Ver todos os produtos
-                  </summary>
+                  <summary className="text-xs text-gold/70 cursor-pointer hover:text-gold">Ver todos os produtos</summary>
                   <div className="grid grid-cols-2 gap-2 mt-2 max-h-48 overflow-y-auto">
                     {products.filter(p => p.category !== 'perfis').map(p => (
-                      <button
-                        key={p.id}
-                        onClick={() => handleSelectProduct(p)}
-                        className="flex items-center gap-2 p-2 rounded-lg text-left border border-border hover:border-gold/40 transition-all"
-                      >
+                      <button key={p.id} onClick={() => handleSelectProduct(p)}
+                        className="flex items-center gap-2 p-2 rounded-lg text-left border border-border hover:border-gold/40 transition-all">
                         <div className="w-6 h-6 rounded-full border border-gold/20 shrink-0" style={{ backgroundColor: p.color }} />
                         <p className="text-foreground text-[11px] truncate">{p.name}</p>
                       </button>
@@ -695,95 +611,82 @@ const AISimulatorTab = () => {
         {step === 4 && currentAnalysis && (
           <div className="space-y-4">
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-                Superfícies disponíveis para revestimento
-              </p>
+              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Superfícies disponíveis para revestimento</p>
               <div className="space-y-2">
                 {(currentAnalysis.superficies_visiveis.length > 0
                   ? currentAnalysis.superficies_visiveis
                   : ['parede_frontal', 'parede_lateral', 'teto']
                 ).map(surface => (
-                  <button
-                    key={surface}
-                    onClick={() => toggleSurface(surface)}
+                  <button key={surface} onClick={() => toggleSurface(surface)}
                     className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all border ${
-                      selectedSurfaces.includes(surface)
-                        ? 'border-gold bg-gold/10'
-                        : 'border-border hover:border-gold/40'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                      selectedSurfaces.includes(surface)
-                        ? 'border-gold bg-gold'
-                        : 'border-muted-foreground'
+                      selectedSurfaces.includes(surface) ? 'border-gold bg-gold/10' : 'border-border hover:border-gold/40'
                     }`}>
-                      {selectedSurfaces.includes(surface) && (
-                        <CheckCircle size={12} className="text-background" />
-                      )}
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                      selectedSurfaces.includes(surface) ? 'border-gold bg-gold' : 'border-muted-foreground'
+                    }`}>
+                      {selectedSurfaces.includes(surface) && <CheckCircle size={12} className="text-background" />}
                     </div>
-                    <span className="text-foreground text-sm">
-                      {SURFACE_LABELS[surface] || surface}
-                    </span>
+                    <span className="text-foreground text-sm">{SURFACE_LABELS[surface] || surface}</span>
                   </button>
                 ))}
               </div>
             </div>
-
-            <button
-              onClick={handleGenerate}
-              disabled={selectedSurfaces.length === 0}
-              className="w-full px-4 py-3 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Visualizar Simulação
+            <button onClick={handleGoToMeasurements} disabled={selectedSurfaces.length === 0}
+              className="w-full px-4 py-3 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+              Próximo: Medidas do Espaço
             </button>
           </div>
         )}
 
-        {/* Step 5: Result */}
+        {/* Step 5: Measurements (NEW) */}
         {step === 5 && selectedProduct && (
-          <div className="space-y-4">
-            <div className="p-3 rounded-lg bg-gold/5 border border-gold/15">
-              <p className="text-gold text-sm font-medium mb-1">
-                Veja como ficaria com {selectedProduct.name}
-              </p>
-              <p className="text-muted-foreground text-xs">
-                {selectedProduct.description}
-              </p>
-              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                <span>{selectedProduct.code}</span>
-                <span>•</span>
-                <span>{selectedProduct.dimensions}</span>
-              </div>
-            </div>
+          <MeasurementStep
+            surfaceType={surfaceType}
+            onSubmit={handleMeasurementSubmit}
+            onSkip={handleSkipMeasurements}
+          />
+        )}
 
-            <button
-              onClick={() => setStep(6)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors"
-            >
+        {/* Step 6: Simulation result */}
+        {step === 6 && selectedProduct && (
+          <div className="space-y-4">
+            <ProjectSummaryCard
+              roomType={currentAnalysis?.tipo_comodo || 'Ambiente'}
+              surfaceLabels={selectedSurfaces.map(s => SURFACE_LABELS[s] || s)}
+              measurements={measurements}
+              calculation={calculation}
+              product={selectedProduct}
+            />
+            <button onClick={() => setStep(7)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
               <MessageCircle size={18} /> Solicitar Orçamento
             </button>
-
-            <button
-              onClick={reset}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 text-muted-foreground hover:text-gold text-sm transition-colors"
-            >
+            <button onClick={reset}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 text-muted-foreground hover:text-gold text-sm transition-colors">
               <RefreshCw size={14} /> Nova Simulação
             </button>
           </div>
         )}
 
-        {/* Step 6: WhatsApp */}
-        {step >= 6 && (
-          <div className="space-y-3 text-center py-4">
-            <p className="text-gold font-medium text-sm">Pronto para transformar seu espaço!</p>
-            <a
-              href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors"
-            >
-              <MessageCircle size={18} /> Abrir WhatsApp
-            </a>
+        {/* Step 7: WhatsApp */}
+        {step >= 7 && (
+          <div className="space-y-4">
+            {selectedProduct && (
+              <ProjectSummaryCard
+                roomType={currentAnalysis?.tipo_comodo || 'Ambiente'}
+                surfaceLabels={selectedSurfaces.map(s => SURFACE_LABELS[s] || s)}
+                measurements={measurements}
+                calculation={calculation}
+                product={selectedProduct}
+              />
+            )}
+            <div className="space-y-3 text-center py-2">
+              <p className="text-gold font-medium text-sm">Pronto para transformar seu espaço!</p>
+              <a href={`https://wa.me/5586999999999?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
+                <MessageCircle size={18} /> Abrir WhatsApp
+              </a>
+            </div>
           </div>
         )}
       </div>
