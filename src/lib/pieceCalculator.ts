@@ -58,6 +58,8 @@ export function getSurfaceTypeFromAnalysis(surfaces: string[]): MeasurementData[
 }
 
 export function getAreaPerPiece(product: Product): number {
+  // Forro PVC has same code as WPC Nogueira but different area
+  if (product.category === 'pvc-ceiling') return 0.840;
   return PIECE_AREAS[product.code] || 0.448;
 }
 
