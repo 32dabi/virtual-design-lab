@@ -17,11 +17,11 @@ const ContactSection = () => {
             <p className="text-sm text-foreground font-medium">Teresina, PI</p>
             <p className="text-xs text-muted-foreground">Brasil</p>
           </a>
-          <a href="https://wa.me/5586999999999" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-center group">
+          <a href="https://wa.me/5586994122399" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-center group">
             <div className="w-12 h-12 rounded-full bg-[rgba(45,106,79,0.3)] flex items-center justify-center mb-3 group-hover:bg-gold/20 transition-colors">
               <Phone className="text-gold" size={20} />
             </div>
-            <p className="text-sm text-foreground font-medium">(86) 9 9999-9999</p>
+            <p className="text-sm text-foreground font-medium">(86) 9 9412-2399</p>
             <p className="text-xs text-muted-foreground">WhatsApp</p>
           </a>
           <a href="https://instagram.com/elevare" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center text-center group">
