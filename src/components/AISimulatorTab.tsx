@@ -70,7 +70,7 @@ const AISimulatorTab = () => {
     return Array.from(allCodes)
       .map(code => {
         const normalized = code.replace(/[\s-]/g, '').toLowerCase();
-        return products.find(p => p.code.replace(/[\s-]/g, '').toLowerCase() === normalized);
+        return simulatorProducts.find(p => p.code.replace(/[\s-]/g, '').toLowerCase() === normalized);
       })
       .filter(Boolean) as Product[];
   }, [allAnalyses]);
