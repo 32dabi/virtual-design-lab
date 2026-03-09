@@ -47,7 +47,7 @@ export const products: Product[] = [
   { id: 'cant-nogueira', name: 'Cantoneira Nogueira', code: 'CT-NG', color: '#5C3D2E', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom nogueira. Acabamento perfeito nas quinas.', application: 'Acabamento' },
   { id: 'cant-amendoa', name: 'Cantoneira Amêndoa', code: 'CT-AM', color: '#D4B896', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom amêndoa. Acabamento perfeito nas quinas.', application: 'Acabamento' },
   { id: 'cant-imbuia', name: 'Cantoneira Imbuia', code: 'CT-IM', color: '#3D2B1F', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom imbuia. Acabamento perfeito nas quinas.', application: 'Acabamento' },
-  { id: 'cant-tiffany', name: 'Cantoneira Tiffany', code: 'CT-TF', color: '#5ABFAD', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC verde água. Acabamento perfeito nas quinas.', application: 'Acabamento' },
+  
   { id: 'cant-preto', name: 'Cantoneira Preto Fosco', code: 'CT-PF', color: '#1A1A1A', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC preto fosco. Acabamento perfeito nas quinas.', application: 'Acabamento' },
 
   // === CATEGORIA 3: BAMBOO CARBON (4 cores) ===
