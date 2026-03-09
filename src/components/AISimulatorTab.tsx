@@ -452,48 +452,38 @@ const AISimulatorTab = () => {
 
           {step === 6 && activeImage && (
             <div className="w-full h-full flex flex-col">
-              <div className="grid grid-cols-2 gap-2 p-3 flex-1 min-h-0">
-                <div className="relative rounded-lg overflow-hidden">
-                  <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-cover" />
-                  <span className="absolute top-2 left-2 bg-background/80 text-foreground text-[10px] px-2 py-0.5 rounded-full">
-                    Seu Ambiente {images.length > 1 ? `(${activeIndex + 1}/${images.length})` : ''}
-                  </span>
-                </div>
-                <div className="relative rounded-lg overflow-hidden">
-                  {closestScene ? (
-                    <img src={closestScene.image} alt={closestScene.productName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-card flex items-center justify-center">
-                      <ImageIcon className="text-muted-foreground" size={40} />
-                    </div>
-                  )}
-                  <span className="absolute top-2 left-2 bg-gold/90 text-background text-[10px] px-2 py-0.5 rounded-full font-medium">
+              <div className="flex-1 relative min-h-0 p-3">
+                {activeImage.editedImage ? (
+                  <img src={activeImage.editedImage} alt={`Ambiente com ${selectedProduct?.name}`} className="w-full h-full object-contain max-h-[500px] rounded-lg" />
+                ) : activeImage.editing ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center">
+                    <Loader2 className="text-gold animate-spin mb-4" size={40} />
+                    <p className="text-gold font-medium">Aplicando {selectedProduct?.name} no seu ambiente...</p>
+                    <p className="text-muted-foreground text-sm mt-1">A IA está editando sua foto</p>
+                  </div>
+                ) : (
+                  <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-contain max-h-[500px] rounded-lg opacity-60" />
+                )}
+                {activeImage.editedImage && (
+                  <span className="absolute top-5 left-5 bg-gold/90 text-background text-xs px-3 py-1 rounded-full font-medium">
                     Com {selectedProduct?.name}
                   </span>
-                </div>
+                )}
               </div>
-              <div className="flex items-center justify-between px-3 pb-2">
+              {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2 pb-2">
+                  {images.map((_, i) => (
+                    <button key={i} onClick={() => setActiveIndex(i)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} />
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-between px-3 pb-3">
                 <button onClick={saveSimulationImage}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors">
                   <Download size={14} /> Salvar Imagem
                 </button>
-                {images.length > 1 && (
-                  <div className="flex items-center gap-2">
-                    {images.map((_, i) => (
-                      <button key={i} onClick={() => setActiveIndex(i)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} />
-                    ))}
-                  </div>
-                )}
               </div>
-              {currentAnalysis?.recomendacao && (
-                <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <Sparkles size={14} className="text-gold mt-0.5 shrink-0" />
-                    <p className="text-foreground/80 text-sm">{currentAnalysis.recomendacao}</p>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
