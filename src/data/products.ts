@@ -21,14 +21,6 @@ export interface Product {
   subType?: string;
   imageCode?: string;
 }
-  color: string;
-  category: ProductCategory;
-  dimensions: string;
-  description: string;
-  application: string;
-  finish?: string;
-  subType?: string;
-}
 
 export const categoryLabels: Record<ProductCategory, string> = {
   'wpc-fluted': 'Ripados WPC',
