@@ -1,8 +1,7 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
-import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
+import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, X, ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
 import { downloadWithWatermark } from '@/lib/watermark';
 import { products, simulatorProducts, type Product } from '@/data/products';
-import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
 import MeasurementStep from './MeasurementStep';
 import ProjectSummaryCard from './ProjectSummaryCard';
@@ -26,6 +25,8 @@ interface ImageEntry {
   analysis: AnalysisResult | null;
   analyzing: boolean;
   error: string | null;
+  editedImage: string | null;
+  editing: boolean;
 }
 
 const MAX_IMAGES = 3;
@@ -44,7 +45,7 @@ const STEPS = [
   { num: 3, label: 'Produto' },
   { num: 4, label: 'Superfície' },
   { num: 5, label: 'Medidas' },
-  { num: 6, label: 'Simulação' },
+  { num: 6, label: 'Visualização' },
   { num: 7, label: 'Orçamento' },
 ];
 
@@ -75,10 +76,7 @@ const AISimulatorTab = () => {
       .filter(Boolean) as Product[];
   }, [allAnalyses]);
 
-  const closestScene = useMemo(() => {
-    if (!selectedProduct) return null;
-    return roomScenes.find(s => s.productId === selectedProduct.id) || null;
-  }, [selectedProduct]);
+
 
   const analyzeImage = useCallback(async (index: number, entries: ImageEntry[]) => {
     const entry = entries[index];
@@ -129,6 +127,7 @@ const AISimulatorTab = () => {
       newEntries.push({
         preview: result, base64: result.split(',')[1], mediaType: mType,
         analysis: null, analyzing: false, error: null,
+        editedImage: null, editing: false,
       });
     }
 
@@ -177,86 +176,101 @@ const AISimulatorTab = () => {
 
   const handleGoToMeasurements = () => setStep(5);
 
-  const handleMeasurementSubmit = (data: MeasurementData) => {
+  const applyMaterialToImage = useCallback(async (imageEntry: ImageEntry, product: Product, surfaces: string[]) => {
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('apply-material', {
+        body: {
+          imageBase64: imageEntry.base64,
+          mediaType: imageEntry.mediaType,
+          productName: product.name,
+          productCode: product.code,
+          productColor: product.color,
+          productFinish: product.finish || '',
+          surfaces,
+        },
+      });
+
+      if (fnError) throw new Error(fnError.message || 'Erro ao aplicar material');
+      if (data?.error) throw new Error(data.error);
+
+      return data.editedImage as string;
+    } catch (err: any) {
+      console.error('Apply material error:', err);
+      throw err;
+    }
+  }, []);
+
+  const handleMeasurementSubmit = async (data: MeasurementData) => {
     setMeasurements(data);
     if (selectedProduct) {
       const result = calculatePieces(data, selectedProduct);
       setCalculation(result);
     }
     setStep(6);
+    
+    // Start applying material to images
+    if (selectedProduct && images.length > 0) {
+      setLoading(true);
+      const updated = [...images];
+      for (let i = 0; i < updated.length; i++) {
+        updated[i] = { ...updated[i], editing: true };
+        setImages([...updated]);
+        setActiveIndex(i);
+        try {
+          const editedImage = await applyMaterialToImage(updated[i], selectedProduct, selectedSurfaces);
+          updated[i] = { ...updated[i], editedImage, editing: false };
+        } catch {
+          updated[i] = { ...updated[i], editing: false };
+        }
+        setImages([...updated]);
+      }
+      setLoading(false);
+      setActiveIndex(0);
+    }
   };
 
-  const handleSkipMeasurements = () => {
+  const handleSkipMeasurements = async () => {
     setMeasurements({ surfaceType: 'parede', width: 0, height: 0, wallCount: 1, deductDoors: false, doorCount: 0, doorSize: { width: 0.8, height: 2.1 }, deductWindows: false, windowCount: 0, windowSize: { width: 1.2, height: 1 }, skipMeasurements: true });
     setCalculation(null);
     setStep(6);
+
+    if (selectedProduct && images.length > 0) {
+      setLoading(true);
+      const updated = [...images];
+      for (let i = 0; i < updated.length; i++) {
+        updated[i] = { ...updated[i], editing: true };
+        setImages([...updated]);
+        setActiveIndex(i);
+        try {
+          const editedImage = await applyMaterialToImage(updated[i], selectedProduct, selectedSurfaces);
+          updated[i] = { ...updated[i], editedImage, editing: false };
+        } catch {
+          updated[i] = { ...updated[i], editing: false };
+        }
+        setImages([...updated]);
+      }
+      setLoading(false);
+      setActiveIndex(0);
+    }
   };
 
   const saveSimulationImage = useCallback(async () => {
     if (!activeImage) return;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const loadImg = (src: string): Promise<HTMLImageElement> =>
-      new Promise((resolve, reject) => {
-        const img = new window.Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-      });
-
-    try {
-      const userImg = await loadImg(activeImage.preview);
-      const productImg = closestScene ? await loadImg(closestScene.image) : null;
-      const w = 1200; const h = 600;
-      canvas.width = w; canvas.height = h;
-
-      ctx.fillStyle = '#0D1F15';
-      ctx.fillRect(0, 0, w, h);
-      const halfW = w / 2 - 10;
-      ctx.drawImage(userImg, 5, 5, halfW, h - 10);
-      if (productImg) ctx.drawImage(productImg, w / 2 + 5, 5, halfW, h - 10);
-
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(5, h - 40, halfW, 35);
-      ctx.fillRect(w / 2 + 5, h - 40, halfW, 35);
-      ctx.fillStyle = '#D4AF37';
-      ctx.font = 'bold 14px Montserrat, sans-serif';
-      ctx.fillText('Seu Ambiente', 15, h - 18);
-      if (selectedProduct) ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
-
-      ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.font = "48px 'Poiret One', sans-serif";
-      ctx.fillStyle = '#D4AF37';
-      ctx.translate(w / 2, h / 2);
-      ctx.rotate(-30 * Math.PI / 180);
-      for (let y = -h; y < h; y += 120) {
-        for (let x = -w; x < w; x += 400) ctx.fillText('ELEVARE', x, y);
-      }
-      ctx.restore();
-
-      ctx.fillStyle = 'rgba(11,61,46,0.85)';
-      ctx.fillRect(0, h - 60, w, 60);
-      ctx.font = "14px 'Montserrat', sans-serif";
-      ctx.fillStyle = '#D4AF37';
-      ctx.fillText('ELEVARE - Cores e Formas | elevare.com.br', 20, h - 25);
-      const date = new Date().toLocaleDateString('pt-BR');
-      const rightText = `Simulação: ${selectedProduct?.name || 'ambiente'} | ${date}`;
-      const tw = ctx.measureText(rightText).width;
-      ctx.fillText(rightText, w - tw - 20, h - 25);
-
+    
+    // If we have an edited image, download it directly
+    if (activeImage.editedImage) {
       const link = document.createElement('a');
       link.download = `elevare-simulacao-${selectedProduct?.name?.replace(/\s+/g, '-').toLowerCase() || 'ambiente'}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = activeImage.editedImage;
       link.click();
-    } catch (err) {
-      console.error('Error saving image:', err);
-      if (activeImage.preview) downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+      return;
     }
-  }, [activeImage, closestScene, selectedProduct]);
+
+    // Fallback: download original with watermark
+    if (activeImage.preview) {
+      downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+    }
+  }, [activeImage, selectedProduct]);
 
   const reset = () => {
     setStep(1);
@@ -386,48 +400,38 @@ const AISimulatorTab = () => {
 
           {step === 6 && activeImage && (
             <div className="w-full h-full flex flex-col">
-              <div className="grid grid-cols-2 gap-2 p-3 flex-1 min-h-0">
-                <div className="relative rounded-lg overflow-hidden">
-                  <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-cover" />
-                  <span className="absolute top-2 left-2 bg-background/80 text-foreground text-[10px] px-2 py-0.5 rounded-full">
-                    Seu Ambiente {images.length > 1 ? `(${activeIndex + 1}/${images.length})` : ''}
-                  </span>
-                </div>
-                <div className="relative rounded-lg overflow-hidden">
-                  {closestScene ? (
-                    <img src={closestScene.image} alt={closestScene.productName} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-card flex items-center justify-center">
-                      <ImageIcon className="text-muted-foreground" size={40} />
-                    </div>
-                  )}
-                  <span className="absolute top-2 left-2 bg-gold/90 text-background text-[10px] px-2 py-0.5 rounded-full font-medium">
+              <div className="flex-1 relative min-h-0 p-3">
+                {activeImage.editedImage ? (
+                  <img src={activeImage.editedImage} alt={`Ambiente com ${selectedProduct?.name}`} className="w-full h-full object-contain max-h-[500px] rounded-lg" />
+                ) : activeImage.editing ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center">
+                    <Loader2 className="text-gold animate-spin mb-4" size={40} />
+                    <p className="text-gold font-medium">Aplicando {selectedProduct?.name} no seu ambiente...</p>
+                    <p className="text-muted-foreground text-sm mt-1">A IA está editando sua foto</p>
+                  </div>
+                ) : (
+                  <img src={activeImage.preview} alt="Seu ambiente" className="w-full h-full object-contain max-h-[500px] rounded-lg opacity-60" />
+                )}
+                {activeImage.editedImage && (
+                  <span className="absolute top-5 left-5 bg-gold/90 text-background text-xs px-3 py-1 rounded-full font-medium">
                     Com {selectedProduct?.name}
                   </span>
-                </div>
+                )}
               </div>
-              <div className="flex items-center justify-between px-3 pb-2">
+              {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2 pb-2">
+                  {images.map((_, i) => (
+                    <button key={i} onClick={() => setActiveIndex(i)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} />
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-between px-3 pb-3">
                 <button onClick={saveSimulationImage}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-gold/15 text-gold rounded-lg text-xs font-medium hover:bg-gold/25 transition-colors">
                   <Download size={14} /> Salvar Imagem
                 </button>
-                {images.length > 1 && (
-                  <div className="flex items-center gap-2">
-                    {images.map((_, i) => (
-                      <button key={i} onClick={() => setActiveIndex(i)}
-                        className={`w-2.5 h-2.5 rounded-full transition-all ${activeIndex === i ? 'bg-gold scale-125' : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'}`} />
-                    ))}
-                  </div>
-                )}
               </div>
-              {currentAnalysis?.recomendacao && (
-                <div className="mx-3 mb-3 p-3 glass-card rounded-lg">
-                  <div className="flex items-start gap-2">
-                    <Sparkles size={14} className="text-gold mt-0.5 shrink-0" />
-                    <p className="text-foreground/80 text-sm">{currentAnalysis.recomendacao}</p>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -461,7 +465,7 @@ const AISimulatorTab = () => {
             </div>
           )}
 
-          {loading && (
+          {loading && step < 6 && (
             <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10">
               <Loader2 className="text-gold animate-spin mb-4" size={40} />
               <p className="text-gold font-medium">
