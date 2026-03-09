@@ -11,8 +11,8 @@ const PIECE_AREAS: Record<string, number> = {
   'LTM 8032': 0.364, 'X89-248': 0.364,
   // Bamboo Carbon - 1.220 x 2.800
   'LTM88614': 3.416, 'LTM88631': 3.416, 'LTM88653': 3.416, 'LTM88634': 3.416,
-  // Forro PVC - 0.300 x 2.800
-  'LTM 88676': 0.840,
+  // Forro PVC - 0.300 x 2.800 (same code as WPC Nogueira but different product — forro uses category check)
+  'LTM88676-forro': 0.840,
   // WPC Outdoor Painel - 0.219 x 2.900
   'WPC-CW': 0.635, 'WPC-TK': 0.635,
   // WPC Outdoor Cantoneira - 0.051 x 2.900 (linear)
