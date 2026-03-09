@@ -131,6 +131,7 @@ const AISimulatorTab = () => {
       newEntries.push({
         preview: result, base64: result.split(',')[1], mediaType: mType,
         analysis: null, analyzing: false, error: null,
+        editedImage: null, editing: false,
       });
     }
 
