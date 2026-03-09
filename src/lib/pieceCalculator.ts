@@ -2,19 +2,21 @@ import type { Product } from '@/data/products';
 
 // Area per piece in m² based on product code/category
 const PIECE_AREAS: Record<string, number> = {
-  // Ripados WPC - 0.160 x 2.800
+  // WPC Fluted - 0.160 x 2.800
   'LTM 88696': 0.448, 'LTM 88676': 0.448, 'LTD 89015': 0.448,
   'LTM88626': 0.448, '512601': 0.448, 'LT00987': 0.448,
-  // Ripados Fluted 150mm - 0.150 x 2.800
+  // Fluted 150mm - 0.150 x 2.800
   'KT 1073': 0.420, 'KT 1071': 0.420, 'LTJCW2016': 0.420, 'KT 1073 var': 0.420,
-  // Ripados Fluted 130mm - 0.130 x 2.800
+  // Fluted 130mm - 0.130 x 2.800
   'LTM 8032': 0.364, 'X89-248': 0.364,
   // Bamboo Carbon - 1.220 x 2.800
   'LTM88614': 3.416, 'LTM88631': 3.416, 'LTM88653': 3.416, 'LTM88634': 3.416,
-  // Forro PVC - 0.300 x 2.800
+  // Forro PVC - 0.300 x 2.800 (same code as WPC Nogueira but different product — forro uses category check)
   'LTM88676-forro': 0.840,
-  // WPC Externo - 0.219 x 2.900
+  // WPC Outdoor Painel - 0.219 x 2.900
   'WPC-CW': 0.635, 'WPC-TK': 0.635,
+  // WPC Outdoor Cantoneira - 0.051 x 2.900 (linear)
+  'WPC-CC': 0.148, 'WPC-CT': 0.148,
 };
 
 export interface DoorConfig { width: number; height: number; }
@@ -42,7 +44,6 @@ export interface CalculationResult {
   piecesExact: number;
   piecesWithMargin: number;
   areaPerPiece: number;
-  // Accessories
   cornerTrimMeters: number;
   cornerTrimPieces: number;
   clipsCount: number;
@@ -57,6 +58,8 @@ export function getSurfaceTypeFromAnalysis(surfaces: string[]): MeasurementData[
 }
 
 export function getAreaPerPiece(product: Product): number {
+  // Forro PVC has same code as WPC Nogueira but different area
+  if (product.category === 'pvc-ceiling') return 0.840;
   return PIECE_AREAS[product.code] || 0.448;
 }
 
@@ -102,11 +105,11 @@ export function calculatePieces(measurements: MeasurementData, product: Product)
 
   let suggestedProfile: CalculationResult['suggestedProfile'];
   if (lightness > 160) {
-    suggestedProfile = { name: 'Mental Line Gold', code: 'ML-GD', color: '#D4AF37' };
+    suggestedProfile = { name: 'Mental Line Gold', code: 'ML-PG', color: '#D4AF37' };
   } else if (lightness < 80) {
-    suggestedProfile = { name: 'Mental Line Black', code: 'ML-BK', color: '#1A1A1A' };
+    suggestedProfile = { name: 'Mental Line Black', code: 'ML-PB', color: '#1A1A1A' };
   } else {
-    suggestedProfile = { name: 'Mental Line Silver', code: 'ML-SV', color: '#C0C0C0' };
+    suggestedProfile = { name: 'Mental Line Silver', code: 'ML-PS', color: '#C0C0C0' };
   }
 
   return {

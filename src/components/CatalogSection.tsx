@@ -3,13 +3,32 @@ import { products, categoryLabels, type Product, type ProductCategory } from '@/
 import ProductCard from './ProductCard';
 import ProductModal from './ProductModal';
 
-const categories: (ProductCategory | 'all')[] = ['all', 'ripado-wpc', 'ripado-fluted', 'bamboo-carbon', 'forro-pvc', 'wpc-externo', 'perfis'];
+const categories: (ProductCategory | 'all' | 'perfis-acabamentos')[] = [
+  'all',
+  'wpc-fluted',
+  'fluted-panel',
+  'bamboo-carbon',
+  'pvc-ceiling',
+  'wpc-outdoor',
+  'perfis-acabamentos',
+  'clips',
+];
+
+const filterLabels: Record<string, string> = {
+  all: 'Todos',
+  ...categoryLabels,
+  'perfis-acabamentos': 'Perfis e Acabamentos',
+};
 
 const CatalogSection = () => {
-  const [active, setActive] = useState<ProductCategory | 'all'>('all');
+  const [active, setActive] = useState<string>('all');
   const [selected, setSelected] = useState<Product | null>(null);
 
-  const filtered = active === 'all' ? products : products.filter(p => p.category === active);
+  const filtered = active === 'all'
+    ? products
+    : active === 'perfis-acabamentos'
+      ? products.filter(p => p.category === 'pvc-corner' || p.category === 'mental-line')
+      : products.filter(p => p.category === active);
 
   return (
     <section id="catalogo" className="py-20 px-6 max-w-7xl mx-auto">
@@ -32,7 +51,7 @@ const CatalogSection = () => {
                 : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
             }`}
           >
-            {cat === 'all' ? 'Todos' : categoryLabels[cat]}
+            {filterLabels[cat] || cat}
           </button>
         ))}
       </div>
