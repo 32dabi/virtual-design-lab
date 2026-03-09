@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { Camera, Upload, Loader2, CheckCircle, MessageCircle, RefreshCw, Sparkles, Image as ImageIcon, X, ChevronLeft, ChevronRight, Plus, Download } from 'lucide-react';
 import { downloadWithWatermark } from '@/lib/watermark';
-import { products, type Product } from '@/data/products';
+import { products, simulatorProducts, type Product } from '@/data/products';
 import { roomScenes } from '@/data/rooms';
 import { supabase } from '@/integrations/supabase/client';
 import MeasurementStep from './MeasurementStep';
