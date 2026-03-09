@@ -520,9 +520,9 @@ const AISimulatorTab = () => {
                   className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
                   <MessageCircle size={18} /> Solicitar Orçamento via WhatsApp
                 </a>
-                <button onClick={() => { setStep(3); setMeasurements(null); setCalculation(null); }}
+                <button onClick={() => { setStep(3); setSelectedProduct(null); setSelectedSurfaces([]); setMeasurements(null); setCalculation(null); setImages(prev => prev.map(img => ({ ...img, editedImage: null, editing: false }))); }}
                   className="flex items-center justify-center gap-2 px-6 py-3 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors">
-                  <RefreshCw size={16} /> Refazer com outro produto
+                  <RefreshCw size={16} /> Simular com outro material
                 </button>
                 <button onClick={reset}
                   className="flex items-center justify-center gap-2 px-6 py-2 text-muted-foreground hover:text-gold text-sm transition-colors">
@@ -731,6 +731,10 @@ const AISimulatorTab = () => {
             <button onClick={() => setStep(7)}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
               <MessageCircle size={18} /> Solicitar Orçamento
+            </button>
+            <button onClick={() => { setStep(3); setSelectedProduct(null); setSelectedSurfaces([]); setMeasurements(null); setCalculation(null); setImages(prev => prev.map(img => ({ ...img, editedImage: null, editing: false }))); }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border border-gold/30 text-gold rounded-xl text-sm hover:bg-gold/10 transition-colors">
+              <RefreshCw size={14} /> Simular com outro material
             </button>
             <button onClick={reset}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 text-muted-foreground hover:text-gold text-sm transition-colors">
