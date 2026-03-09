@@ -56,7 +56,7 @@ export const products: Product[] = [
   { id: 'bamboo-teca-mel', name: 'Bamboo Teca Mel', code: 'LTM88634', color: '#B8860B', category: 'bamboo-carbon', dimensions: '1220 x 2800 x 8mm', description: 'Placa lisa grande formato, textura bambu carbonizado tom teca mel dourado. Calor e acolhimento.', application: 'Parede Interna', finish: 'Liso' },
 
   // === CATEGORIA 4: PVC CEILING / FORRO (1 cor) ===
-  { id: 'forro-pvc-nogueira', name: 'Forro PVC Nogueira', code: 'LTM 88676', color: '#5C3D2E', category: 'pvc-ceiling', dimensions: '300 x 2800 x 8mm', description: 'Régua larga lisa com acabamento amadeirado nogueira. Praticidade e design para forros.', application: 'Teto / Forro', finish: 'Liso Amadeirado' },
+  { id: 'forro-pvc-nogueira', name: 'Forro PVC Nogueira', code: 'LTM 88676', color: '#5C3D2E', category: 'pvc-ceiling', dimensions: '300 x 2800 x 8mm', description: 'Régua larga lisa com acabamento amadeirado nogueira. Praticidade e design para forros.', application: 'Teto / Forro', finish: 'Liso Amadeirado', imageCode: 'LTM88676-forro' },
 
   // === CATEGORIA 5: FLUTED WALL PANEL PREMIUM (3 tipos, 6 cores) ===
   // Tipo 1 - Ripado fino 150mm (15mm espessura)
