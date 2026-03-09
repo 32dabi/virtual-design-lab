@@ -465,7 +465,7 @@ const AISimulatorTab = () => {
             </div>
           )}
 
-          {loading && (
+          {loading && step < 6 && (
             <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center z-10">
               <Loader2 className="text-gold animate-spin mb-4" size={40} />
               <p className="text-gold font-medium">
