@@ -1,7 +1,9 @@
 const HeroSection = () => {
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Video background */}
+      {/* Animated gradient background (shows immediately) */}
+      <div className="absolute inset-0 hero-gradient-animated" />
+      {/* Video background (loads on top) */}
       <div className="absolute inset-0">
         <video
           autoPlay
