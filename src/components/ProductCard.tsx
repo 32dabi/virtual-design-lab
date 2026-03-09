@@ -14,13 +14,12 @@ const ProductCard = ({ product, onClick }: Props) => {
       className="glass-card rounded-xl overflow-hidden text-left transition-all duration-300 group cursor-pointer hover:shadow-[0_0_20px_rgba(45,106,79,0.3)]"
     >
       {/* Sample image area */}
-      <div className="relative h-[200px] overflow-hidden bg-card">
+      <div className="relative h-[250px] overflow-hidden bg-card">
         <img
           src={sampleImage}
           alt={`Amostra ${product.name}`}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => {
-            // Fallback: gradient with product color
             const target = e.currentTarget;
             target.style.display = 'none';
             const fallback = target.nextElementSibling as HTMLElement;
