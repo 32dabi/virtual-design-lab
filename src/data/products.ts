@@ -42,12 +42,11 @@ export const products: Product[] = [
   { id: 'wpc-tiffany', name: 'Ripado Tiffany', code: '512601', color: '#5ABFAD', category: 'wpc-fluted', dimensions: '160 x 2800 x 24mm', description: 'Verde água vibrante. Ousadia e frescor para espaços comerciais e clínicas.', application: 'Parede Interna', finish: 'Ripado Vertical' },
   { id: 'wpc-preto-fosco', name: 'Ripado Preto Fosco', code: 'LT00987', color: '#1A1A1A', category: 'wpc-fluted', dimensions: '160 x 2800 x 24mm', description: 'Preto fosco elegante. Impacto visual dramático para ambientes de alto padrão.', application: 'Parede Interna', finish: 'Ripado Vertical' },
 
-  // === CATEGORIA 2: PVC CORNER / CANTONEIRA (6 cores) ===
+  // === CATEGORIA 2: PVC CORNER / CANTONEIRA (5 cores) ===
   { id: 'cant-carvalho', name: 'Cantoneira Carvalho Natural', code: 'CT-CV', color: '#C4AA82', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom carvalho natural. Acabamento perfeito nas quinas.', application: 'Acabamento' },
   { id: 'cant-nogueira', name: 'Cantoneira Nogueira', code: 'CT-NG', color: '#5C3D2E', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom nogueira. Acabamento perfeito nas quinas.', application: 'Acabamento' },
   { id: 'cant-amendoa', name: 'Cantoneira Amêndoa', code: 'CT-AM', color: '#D4B896', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom amêndoa. Acabamento perfeito nas quinas.', application: 'Acabamento' },
   { id: 'cant-imbuia', name: 'Cantoneira Imbuia', code: 'CT-IM', color: '#3D2B1F', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC tom imbuia. Acabamento perfeito nas quinas.', application: 'Acabamento' },
-  
   { id: 'cant-preto', name: 'Cantoneira Preto Fosco', code: 'CT-PF', color: '#1A1A1A', category: 'pvc-corner', dimensions: '2800 x 25 x 25mm', description: 'Cantoneira PVC preto fosco. Acabamento perfeito nas quinas.', application: 'Acabamento' },
 
   // === CATEGORIA 3: BAMBOO CARBON (4 cores) ===
