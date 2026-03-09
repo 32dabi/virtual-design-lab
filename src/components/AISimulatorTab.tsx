@@ -180,19 +180,82 @@ const AISimulatorTab = () => {
 
   const handleGoToMeasurements = () => setStep(5);
 
-  const handleMeasurementSubmit = (data: MeasurementData) => {
+  const applyMaterialToImage = useCallback(async (imageEntry: ImageEntry, product: Product, surfaces: string[]) => {
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('apply-material', {
+        body: {
+          imageBase64: imageEntry.base64,
+          mediaType: imageEntry.mediaType,
+          productName: product.name,
+          productCode: product.code,
+          productColor: product.color,
+          productFinish: product.finish || '',
+          surfaces,
+        },
+      });
+
+      if (fnError) throw new Error(fnError.message || 'Erro ao aplicar material');
+      if (data?.error) throw new Error(data.error);
+
+      return data.editedImage as string;
+    } catch (err: any) {
+      console.error('Apply material error:', err);
+      throw err;
+    }
+  }, []);
+
+  const handleMeasurementSubmit = async (data: MeasurementData) => {
     setMeasurements(data);
     if (selectedProduct) {
       const result = calculatePieces(data, selectedProduct);
       setCalculation(result);
     }
     setStep(6);
+    
+    // Start applying material to images
+    if (selectedProduct && images.length > 0) {
+      setLoading(true);
+      const updated = [...images];
+      for (let i = 0; i < updated.length; i++) {
+        updated[i] = { ...updated[i], editing: true };
+        setImages([...updated]);
+        setActiveIndex(i);
+        try {
+          const editedImage = await applyMaterialToImage(updated[i], selectedProduct, selectedSurfaces);
+          updated[i] = { ...updated[i], editedImage, editing: false };
+        } catch {
+          updated[i] = { ...updated[i], editing: false };
+        }
+        setImages([...updated]);
+      }
+      setLoading(false);
+      setActiveIndex(0);
+    }
   };
 
-  const handleSkipMeasurements = () => {
+  const handleSkipMeasurements = async () => {
     setMeasurements({ surfaceType: 'parede', width: 0, height: 0, wallCount: 1, deductDoors: false, doorCount: 0, doorSize: { width: 0.8, height: 2.1 }, deductWindows: false, windowCount: 0, windowSize: { width: 1.2, height: 1 }, skipMeasurements: true });
     setCalculation(null);
     setStep(6);
+
+    if (selectedProduct && images.length > 0) {
+      setLoading(true);
+      const updated = [...images];
+      for (let i = 0; i < updated.length; i++) {
+        updated[i] = { ...updated[i], editing: true };
+        setImages([...updated]);
+        setActiveIndex(i);
+        try {
+          const editedImage = await applyMaterialToImage(updated[i], selectedProduct, selectedSurfaces);
+          updated[i] = { ...updated[i], editedImage, editing: false };
+        } catch {
+          updated[i] = { ...updated[i], editing: false };
+        }
+        setImages([...updated]);
+      }
+      setLoading(false);
+      setActiveIndex(0);
+    }
   };
 
   const saveSimulationImage = useCallback(async () => {
