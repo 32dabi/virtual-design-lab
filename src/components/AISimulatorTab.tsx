@@ -256,19 +256,86 @@ const AISimulatorTab = () => {
 
   const saveSimulationImage = useCallback(async () => {
     if (!activeImage) return;
-    
-    // If we have an edited image, download it directly
-    if (activeImage.editedImage) {
+
+    const imgSrc = activeImage.editedImage || activeImage.preview;
+    if (!imgSrc) return;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const loadImg = (src: string): Promise<HTMLImageElement> =>
+      new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+
+    try {
+      const photo = await loadImg(imgSrc);
+      const w = 1200;
+      const barH = 60;
+      const h = Math.round((photo.height / photo.width) * w) + barH;
+      canvas.width = w;
+      canvas.height = h;
+
+      // Background
+      ctx.fillStyle = '#0D1F15';
+      ctx.fillRect(0, 0, w, h);
+
+      // Draw photo
+      ctx.drawImage(photo, 0, 0, w, h - barH);
+
+      // Diagonal watermark
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      ctx.font = "48px 'Eunomia', 'Poiret One', sans-serif";
+      ctx.fillStyle = '#D4AF37';
+      ctx.translate(w / 2, (h - barH) / 2);
+      ctx.rotate(-30 * Math.PI / 180);
+      for (let y = -h; y < h; y += 120) {
+        for (let x = -w; x < w; x += 400) ctx.fillText('ELEVARE', x, y);
+      }
+      ctx.restore();
+
+      // Product label on photo
+      if (activeImage.editedImage && selectedProduct) {
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.fillRect(0, h - barH - 36, w, 36);
+        ctx.font = "bold 14px 'Montserrat', sans-serif";
+        ctx.fillStyle = '#D4AF37';
+        ctx.fillText(`✦ ${selectedProduct.name} (${selectedProduct.code}) — ${selectedProduct.dimensions}`, 16, h - barH - 13);
+      }
+
+      // Bottom branded bar
+      ctx.fillStyle = 'rgba(11,61,46,0.9)';
+      ctx.fillRect(0, h - barH, w, barH);
+
+      // Left: brand
+      ctx.font = "bold 16px 'Eunomia', 'Montserrat', sans-serif";
+      ctx.fillStyle = '#D4AF37';
+      ctx.fillText('ELEVARE — Cores e Formas', 20, h - 24);
+
+      // Right: date + product
+      ctx.font = "13px 'Montserrat', sans-serif";
+      const date = new Date().toLocaleDateString('pt-BR');
+      const rightText = `Simulação IA • ${selectedProduct?.name || 'Ambiente'} • ${date}`;
+      const tw = ctx.measureText(rightText).width;
+      ctx.fillText(rightText, w - tw - 20, h - 24);
+
+      // Thin gold line at top of bar
+      ctx.fillStyle = '#D4AF37';
+      ctx.fillRect(0, h - barH, w, 2);
+
       const link = document.createElement('a');
       link.download = `elevare-simulacao-${selectedProduct?.name?.replace(/\s+/g, '-').toLowerCase() || 'ambiente'}.png`;
-      link.href = activeImage.editedImage;
+      link.href = canvas.toDataURL('image/png');
       link.click();
-      return;
-    }
-
-    // Fallback: download original with watermark
-    if (activeImage.preview) {
-      downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+    } catch (err) {
+      console.error('Error saving image:', err);
+      if (activeImage.preview) downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
     }
   }, [activeImage, selectedProduct]);
 
