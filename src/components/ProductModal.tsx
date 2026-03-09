@@ -13,7 +13,7 @@ interface Props {
 const ProductModal = ({ product, open, onClose }: Props) => {
   if (!product) return null;
 
-  const sampleImage = `/images/produtos/${product.code.replace(/\s+/g, '')}.jpg`;
+  const sampleImage = `/images/produtos/${(product.imageCode || product.code).replace(/\s+/g, '')}.jpg`;
   const whatsappMsg = encodeURIComponent(`Olá! Tenho interesse no painel ${product.name} (${product.code}). Gostaria de mais informações.`);
 
   // Find a matching room scene for this product

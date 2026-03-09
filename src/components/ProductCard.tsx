@@ -6,7 +6,7 @@ interface Props {
 }
 
 const ProductCard = ({ product, onClick }: Props) => {
-  const sampleImage = `/images/produtos/${product.code.replace(/\s+/g, '')}.jpg`;
+  const sampleImage = `/images/produtos/${(product.imageCode || product.code).replace(/\s+/g, '')}.jpg`;
 
   return (
     <button
