@@ -76,10 +76,7 @@ const AISimulatorTab = () => {
       .filter(Boolean) as Product[];
   }, [allAnalyses]);
 
-  const closestScene = useMemo(() => {
-    if (!selectedProduct) return null;
-    return roomScenes.find(s => s.productId === selectedProduct.id) || null;
-  }, [selectedProduct]);
+
 
   const analyzeImage = useCallback(async (index: number, entries: ImageEntry[]) => {
     const entry = entries[index];
