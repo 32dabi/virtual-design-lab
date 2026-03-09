@@ -173,7 +173,7 @@ const GalleryTab = () => {
                 )}
                 <div className="flex gap-2">
                   <a
-                    href={`https://wa.me/5586999999999?text=${whatsappMsg}`}
+                    href={`https://wa.me/5586994122399?text=${whatsappMsg}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 flex-1 px-4 py-3 bg-[#25D366] text-white rounded-xl text-sm font-medium hover:bg-[#20BD5A] transition-colors"
