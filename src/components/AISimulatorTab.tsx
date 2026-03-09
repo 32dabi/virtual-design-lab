@@ -445,7 +445,7 @@ const AISimulatorTab = () => {
                   className="flex items-center justify-center gap-2 px-6 py-3 bg-gold/15 text-gold rounded-xl font-medium hover:bg-gold/25 transition-colors border border-gold/30">
                   <Download size={18} /> Baixar Simulação
                 </button>
-                <a href={`https://wa.me/5586999999999?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+                <a href={`https://wa.me/5586994122399?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-6 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
                   <MessageCircle size={18} /> Solicitar Orçamento via WhatsApp
                 </a>
@@ -682,7 +682,7 @@ const AISimulatorTab = () => {
             )}
             <div className="space-y-3 text-center py-2">
               <p className="text-gold font-medium text-sm">Pronto para transformar seu espaço!</p>
-              <a href={`https://wa.me/5586999999999?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
+              <a href={`https://wa.me/5586994122399?text=${whatsappMsg}`} target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#25D366] text-white rounded-xl font-medium hover:bg-[#20BD5A] transition-colors">
                 <MessageCircle size={18} /> Abrir WhatsApp
               </a>
