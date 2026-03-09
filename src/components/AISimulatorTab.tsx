@@ -26,6 +26,8 @@ interface ImageEntry {
   analysis: AnalysisResult | null;
   analyzing: boolean;
   error: string | null;
+  editedImage: string | null;
+  editing: boolean;
 }
 
 const MAX_IMAGES = 3;
