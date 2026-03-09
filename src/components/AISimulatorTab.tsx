@@ -46,7 +46,7 @@ const STEPS = [
   { num: 3, label: 'Produto' },
   { num: 4, label: 'Superfície' },
   { num: 5, label: 'Medidas' },
-  { num: 6, label: 'Simulação' },
+  { num: 6, label: 'Visualização' },
   { num: 7, label: 'Orçamento' },
 ];
 
