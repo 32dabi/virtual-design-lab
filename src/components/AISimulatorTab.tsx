@@ -260,69 +260,21 @@ const AISimulatorTab = () => {
 
   const saveSimulationImage = useCallback(async () => {
     if (!activeImage) return;
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const loadImg = (src: string): Promise<HTMLImageElement> =>
-      new Promise((resolve, reject) => {
-        const img = new window.Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src;
-      });
-
-    try {
-      const userImg = await loadImg(activeImage.preview);
-      const productImg = closestScene ? await loadImg(closestScene.image) : null;
-      const w = 1200; const h = 600;
-      canvas.width = w; canvas.height = h;
-
-      ctx.fillStyle = '#0D1F15';
-      ctx.fillRect(0, 0, w, h);
-      const halfW = w / 2 - 10;
-      ctx.drawImage(userImg, 5, 5, halfW, h - 10);
-      if (productImg) ctx.drawImage(productImg, w / 2 + 5, 5, halfW, h - 10);
-
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(5, h - 40, halfW, 35);
-      ctx.fillRect(w / 2 + 5, h - 40, halfW, 35);
-      ctx.fillStyle = '#D4AF37';
-      ctx.font = 'bold 14px Montserrat, sans-serif';
-      ctx.fillText('Seu Ambiente', 15, h - 18);
-      if (selectedProduct) ctx.fillText(`Com ${selectedProduct.name}`, w / 2 + 15, h - 18);
-
-      ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.font = "48px 'Poiret One', sans-serif";
-      ctx.fillStyle = '#D4AF37';
-      ctx.translate(w / 2, h / 2);
-      ctx.rotate(-30 * Math.PI / 180);
-      for (let y = -h; y < h; y += 120) {
-        for (let x = -w; x < w; x += 400) ctx.fillText('ELEVARE', x, y);
-      }
-      ctx.restore();
-
-      ctx.fillStyle = 'rgba(11,61,46,0.85)';
-      ctx.fillRect(0, h - 60, w, 60);
-      ctx.font = "14px 'Montserrat', sans-serif";
-      ctx.fillStyle = '#D4AF37';
-      ctx.fillText('ELEVARE - Cores e Formas | elevare.com.br', 20, h - 25);
-      const date = new Date().toLocaleDateString('pt-BR');
-      const rightText = `Simulação: ${selectedProduct?.name || 'ambiente'} | ${date}`;
-      const tw = ctx.measureText(rightText).width;
-      ctx.fillText(rightText, w - tw - 20, h - 25);
-
+    
+    // If we have an edited image, download it directly
+    if (activeImage.editedImage) {
       const link = document.createElement('a');
       link.download = `elevare-simulacao-${selectedProduct?.name?.replace(/\s+/g, '-').toLowerCase() || 'ambiente'}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = activeImage.editedImage;
       link.click();
-    } catch (err) {
-      console.error('Error saving image:', err);
-      if (activeImage.preview) downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+      return;
     }
-  }, [activeImage, closestScene, selectedProduct]);
+
+    // Fallback: download original with watermark
+    if (activeImage.preview) {
+      downloadWithWatermark(activeImage.preview, selectedProduct?.name || 'ambiente');
+    }
+  }, [activeImage, selectedProduct]);
 
   const reset = () => {
     setStep(1);
