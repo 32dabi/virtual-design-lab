@@ -593,7 +593,7 @@ const AISimulatorTab = () => {
                 <details className="mt-3">
                   <summary className="text-xs text-gold/70 cursor-pointer hover:text-gold">Ver todos os produtos</summary>
                   <div className="grid grid-cols-2 gap-2 mt-2 max-h-48 overflow-y-auto">
-                    {products.filter(p => !['pvc-corner', 'mental-line', 'clips'].includes(p.category)).map(p => (
+                    {simulatorProducts.map(p => (
                       <button key={p.id} onClick={() => handleSelectProduct(p)}
                         className="flex items-center gap-2 p-2 rounded-lg text-left border border-border hover:border-gold/40 transition-all">
                         <div className="w-6 h-6 rounded-full border border-gold/20 shrink-0" style={{ backgroundColor: p.color }} />
