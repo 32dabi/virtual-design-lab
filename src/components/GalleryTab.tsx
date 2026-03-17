@@ -4,10 +4,7 @@ import { products } from '@/data/products';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MessageCircle } from 'lucide-react';
 
-type FilterCategory = 'all' | 'residencial' | 'comercial';
-
 const GalleryTab = () => {
-  const [categoryFilter, setCategoryFilter] = useState<FilterCategory>('all');
   const [roomFilter, setRoomFilter] = useState<string>('all');
   const [selectedScene, setSelectedScene] = useState<RoomScene | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -16,7 +13,6 @@ const GalleryTab = () => {
 
   const filtered = roomScenes.filter(s => {
     if (failedImages.has(s.id)) return false;
-    if (categoryFilter !== 'all' && s.roomCategory !== categoryFilter) return false;
     if (roomFilter !== 'all' && s.roomType !== roomFilter) return false;
     return true;
   });
@@ -26,10 +22,7 @@ const GalleryTab = () => {
   }, []);
 
   const visibleRoomTypes = roomTypes.filter(rt => {
-    return roomScenes.some(s => {
-      if (categoryFilter !== 'all' && s.roomCategory !== categoryFilter) return false;
-      return s.roomType === rt.id;
-    });
+    return roomScenes.some(s => s.roomType === rt.id);
   });
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>, id: string) => {
@@ -56,25 +49,8 @@ const GalleryTab = () => {
 
   return (
     <div>
-      {/* Category Filters */}
-      <div className="flex flex-wrap gap-2 mb-4 justify-center">
-        {(['all', 'residencial', 'comercial'] as FilterCategory[]).map(cat => (
-          <button
-            key={cat}
-            onClick={() => { setCategoryFilter(cat); setRoomFilter('all'); }}
-            className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
-              categoryFilter === cat
-                ? 'border-2 border-gold bg-gold/15 text-gold'
-                : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
-            }`}
-          >
-            {cat === 'all' ? 'Todos' : cat === 'residencial' ? 'Residencial' : 'Comercial'}
-          </button>
-        ))}
-      </div>
-
       {/* Room type filters */}
-      <div className="flex flex-wrap gap-2 mb-8 justify-center">
+      <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gold/20">
         <button
           onClick={() => setRoomFilter('all')}
           className={`px-3 py-1.5 rounded-full text-[11px] tracking-wider uppercase transition-all ${

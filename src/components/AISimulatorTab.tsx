@@ -580,8 +580,25 @@ const AISimulatorTab = () => {
 
         {/* Step 1 */}
         {step === 1 && (
-          <div className="text-center py-4">
-            <p className="text-muted-foreground text-sm">Envie até {MAX_IMAGES} fotos para começar a simulação com IA</p>
+          <div className="space-y-4 py-2">
+            <p className="text-muted-foreground text-sm text-center">Envie até {MAX_IMAGES} fotos para começar a simulação com IA</p>
+            <div className="space-y-3">
+              {[
+                { icon: Upload, label: 'Envie sua foto', desc: 'Tire uma foto do ambiente que deseja transformar' },
+                { icon: Loader2, label: 'IA analisa', desc: 'Nossa IA identifica superfícies e sugere produtos' },
+                { icon: CheckCircle, label: 'Veja o resultado', desc: 'Visualize o revestimento aplicado no seu espaço' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gold/20 bg-white/[0.03] backdrop-blur-sm">
+                  <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
+                    <item.icon size={18} className="text-gold" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-gold text-sm font-medium">{`${i + 1}. ${item.label}`}</p>
+                    <p className="text-muted-foreground text-xs">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

@@ -35,7 +35,7 @@ const SobreNos = () => {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6 max-w-5xl mx-auto text-center">
+      <section className="pt-32 pb-8 px-6 max-w-5xl mx-auto text-center">
         <div className="gold-line mx-auto mb-6" />
         <h1 className="text-4xl md:text-5xl font-heading font-light tracking-[0.3em] text-gold glow-gold mb-4">
           Sobre Nós
@@ -48,7 +48,7 @@ const SobreNos = () => {
       </section>
 
       {/* História */}
-      <section className="py-16 px-6 max-w-5xl mx-auto">
+      <section className="py-8 px-6 max-w-5xl mx-auto">
         <div className="glass-card rounded-2xl p-8 md:p-12 space-y-6">
           <h2 className="text-2xl md:text-3xl font-heading font-light tracking-wider text-gold">
             Nossa História
@@ -72,8 +72,8 @@ const SobreNos = () => {
       </section>
 
       {/* Por que WPC */}
-      <section className="py-16 px-6 max-w-5xl mx-auto">
-        <div className="text-center mb-12">
+      <section className="py-8 px-6 max-w-5xl mx-auto">
+        <div className="text-center mb-6">
           <div className="gold-line mx-auto mb-4" />
           <h2 className="text-2xl md:text-3xl font-heading font-light tracking-wider text-gold mb-2">
             Por que WPC e Bamboo Carbon?
@@ -96,7 +96,7 @@ const SobreNos = () => {
       </section>
 
       {/* Stats */}
-      <section className="py-16 px-6 max-w-5xl mx-auto">
+      <section className="py-8 px-6 max-w-5xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map(s => (
             <div key={s.label} className="glass-card rounded-xl p-6 text-center">
@@ -108,7 +108,7 @@ const SobreNos = () => {
       </section>
 
       {/* Missão */}
-      <section className="py-16 px-6 max-w-5xl mx-auto">
+      <section className="py-8 px-6 max-w-5xl mx-auto">
         <div className="glass-card rounded-2xl p-8 md:p-12 text-center">
           <div className="gold-line mx-auto mb-6" />
           <h2 className="text-2xl md:text-3xl font-heading font-light tracking-wider text-gold mb-4">
