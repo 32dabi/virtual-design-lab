@@ -139,7 +139,7 @@ const GalleryTab = () => {
               <div className="px-4 pb-4 space-y-3">
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="text-gold font-semibold text-lg">{selectedScene.productName}</p>
+                    <p className="text-gold font-medium text-lg">{selectedScene.productName}</p>
                     <p className="text-muted-foreground text-sm">{selectedScene.roomName}</p>
                   </div>
                   <span className="text-xs text-muted-foreground">{selectedScene.productCode}</span>

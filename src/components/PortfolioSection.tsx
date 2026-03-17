@@ -27,7 +27,7 @@ const PortfolioSection = () => {
           <button
             key={rt.id}
             onClick={() => setFilter(rt.id)}
-            className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === rt.id ? 'border-2 border-gold bg-gold/15 text-gold' : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'}`}
+            className={`px-4 py-2 rounded-full text-xs tracking-wider uppercase transition-all ${filter === rt.id ? 'border border-gold bg-gold/15 text-gold' : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'}`}
           >
             {rt.label}
           </button>

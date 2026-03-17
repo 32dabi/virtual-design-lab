@@ -47,7 +47,7 @@ const CatalogSection = () => {
             onClick={() => setActive(cat)}
             className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
               active === cat
-                ? 'border-2 border-gold bg-gold/15 text-gold'
+                ? 'border border-gold bg-gold/15 text-gold'
                 : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
             }`}
           >
