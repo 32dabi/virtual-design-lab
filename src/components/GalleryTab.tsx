@@ -105,7 +105,7 @@ const GalleryTab = () => {
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent p-4 pt-10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gold font-semibold text-sm">{scene.productName}</p>
+                    <p className="text-gold font-medium text-sm">{scene.productName}</p>
                     <p className="text-foreground/60 text-xs">{scene.roomName}</p>
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider ${
