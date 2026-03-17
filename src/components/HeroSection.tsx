@@ -1,10 +1,21 @@
+import { useState } from 'react';
+
 const HeroSection = () => {
+  const [videoReady, setVideoReady] = useState(false);
+
   return (
-    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated gradient background (shows immediately) */}
+    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0 hero-gradient-animated" />
-      {/* Video background (loads on top) */}
+
       <div className="absolute inset-0">
+        <div
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ${
+            videoReady ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ backgroundImage: "url('/images/hero-bg.png')" }}
+          aria-hidden="true"
+        />
+
         <video
           autoPlay
           muted
@@ -12,16 +23,19 @@ const HeroSection = () => {
           playsInline
           preload="auto"
           poster="/images/hero-bg.png"
-          className="w-full h-full object-cover"
+          onCanPlay={() => setVideoReady(true)}
+          className={`w-full h-full object-cover transition-opacity duration-700 ${
+            videoReady ? 'opacity-100' : 'opacity-0'
+          }`}
         >
           <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
+
         <div className="absolute inset-0 bg-background/60" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/90" />
       </div>
 
-      {/* Animated rippled lines */}
-      <div className="absolute inset-0 flex justify-between px-[10%] pointer-events-none">
+      <div className={`absolute inset-0 flex justify-between px-[10%] pointer-events-none transition-opacity duration-700 ${videoReady ? 'opacity-100' : 'opacity-40'}`}>
         {Array.from({ length: 7 }).map((_, i) => (
           <div
             key={i}
@@ -31,7 +45,6 @@ const HeroSection = () => {
         ))}
       </div>
 
-      {/* Content */}
       <div className="relative z-10 text-center px-6">
         <div className="gold-line mx-auto mb-8" />
         <h1 className="font-logo text-6xl md:text-8xl lg:text-9xl text-gold tracking-[0.15em] uppercase glow-gold mb-4">
