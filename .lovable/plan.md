@@ -1,18 +1,37 @@
 
 
-## Exportar o código-fonte do projeto
+## Plan: Fix Instagram handle, font weight, and button design
 
-O código do projeto já é seu — ele está versionado no repositório Git do Lovable. Existem duas formas de obter todo o código:
+### Changes
 
-### Opção 1: Via GitHub (recomendado)
-1. No Lovable, vá em **Settings → GitHub** e conecte seu repositório
-2. Todo o código será sincronizado automaticamente para o seu GitHub
-3. Você pode clonar localmente com `git clone`
+**1. Fix Instagram — `src/components/ContactSection.tsx`**
+- Change `@elevare` to `@elevareconceito`
+- Update the Instagram link from `https://instagram.com/elevare` to `https://instagram.com/elevareconceito`
 
-### Opção 2: Download direto
-O Lovable permite exportar o código pelo botão **"Download"** no canto superior direito do editor (ícone de download/export), que baixa um ZIP com todos os arquivos do projeto.
+**2. Fix font weight throughout the site**
 
-Não é necessário nenhuma alteração no código — ambas as opções já dão acesso completo a todos os arquivos (componentes, edge functions, dados, configurações, etc.).
+The project only loads `Barlow-Regular.ttf` (weight 400). Any use of `font-semibold` (600) or `font-bold` (700) causes the browser to synthesize a fake bold, resulting in thick, ugly text.
 
-Quer que eu te guie por uma dessas opções?
+Remove all `font-bold` and `font-semibold` from the following components, replacing with `font-medium` or `font-normal` as appropriate:
+
+- **`HeroSection.tsx`**: The CTA buttons use `font-bold` — change to `font-medium`
+- **`CatalogSection.tsx`**: Section heading uses `font-semibold` — change to `font-normal` or `font-medium`
+- **`PortfolioSection.tsx`**: Section heading uses `font-semibold` — same fix
+- **`ContactSection.tsx`**: Section heading uses `font-semibold` — same fix
+- **`GalleryTab.tsx`**: Product name labels use `font-semibold` — change to `font-medium`
+- Any other components using `font-semibold` or `font-bold` with Barlow
+
+**3. Fix filter button design**
+
+The filter buttons in Portfolio and Catalog sections use `border-2` for the active state, making them look thick and heavy. Changes:
+
+- **`PortfolioSection.tsx`** and **`CatalogSection.tsx`**: Change active state from `border-2 border-gold` to `border border-gold` (single pixel border) for a more refined look
+- Keep the `rounded-full` pill shape but ensure consistent, thin borders
+
+### Summary of files to edit
+- `src/components/ContactSection.tsx` — Instagram handle + font weight
+- `src/components/HeroSection.tsx` — button font weight
+- `src/components/CatalogSection.tsx` — heading + button border
+- `src/components/PortfolioSection.tsx` — heading + button border
+- `src/components/GalleryTab.tsx` — label font weight
 
