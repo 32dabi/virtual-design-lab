@@ -6,7 +6,7 @@ const ContactSection = () => {
       <div className="max-w-4xl mx-auto glass-card rounded-2xl p-8 md:p-12">
         <div className="text-center mb-10">
           <div className="gold-line mx-auto mb-4" />
-          <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2">Contato</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-normal text-gold tracking-wider mb-2">Contato</h2>
           <p className="text-muted-foreground">Entre em contato e transforme seu espaço</p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
