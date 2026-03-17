@@ -59,13 +59,13 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-5 justify-center">
           <a
             href="#catalogo"
-            className="px-12 py-4 border border-gold/60 text-gold font-bold tracking-wider uppercase text-base rounded hover:bg-gold/10 hover:border-gold transition-all flex items-center justify-center font-subtitle"
+            className="px-12 py-4 border border-gold/60 text-gold font-medium tracking-wider uppercase text-base rounded hover:bg-gold/10 hover:border-gold transition-all flex items-center justify-center font-subtitle"
           >
             Ver Catálogo
           </a>
           <a
             href="#contato"
-            className="px-14 py-5 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-bold tracking-wider uppercase text-base rounded shadow-[0_0_20px_hsl(43_62%_52%/0.4)] hover:shadow-[0_0_30px_hsl(43_62%_52%/0.6)] hover:scale-105 transition-all duration-300 font-subtitle"
+            className="px-14 py-5 bg-gradient-to-r from-[hsl(var(--gold))] to-[hsl(var(--gold-light))] text-background font-medium tracking-wider uppercase text-base rounded shadow-[0_0_20px_hsl(43_62%_52%/0.4)] hover:shadow-[0_0_30px_hsl(43_62%_52%/0.6)] hover:scale-105 transition-all duration-300 font-subtitle"
           >
             Solicitar Orçamento
           </a>

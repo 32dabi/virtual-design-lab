@@ -35,7 +35,7 @@ const CatalogSection = () => {
       {/* Header */}
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider">Catálogo</h2>
+        <h2 className="text-3xl md:text-4xl font-heading font-normal text-gold tracking-wider">Catálogo</h2>
         <p className="text-muted-foreground mt-2">Explore nossa linha completa de revestimentos</p>
       </div>
 
@@ -47,7 +47,7 @@ const CatalogSection = () => {
             onClick={() => setActive(cat)}
             className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
               active === cat
-                ? 'border-2 border-gold bg-gold/15 text-gold'
+                ? 'border border-gold bg-gold/15 text-gold'
                 : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
             }`}
           >
