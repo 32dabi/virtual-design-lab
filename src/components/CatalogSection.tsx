@@ -35,7 +35,7 @@ const CatalogSection = () => {
       {/* Header */}
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider">Catálogo</h2>
+        <h2 className="text-3xl md:text-4xl font-heading font-normal text-gold tracking-wider">Catálogo</h2>
         <p className="text-muted-foreground mt-2">Explore nossa linha completa de revestimentos</p>
       </div>
 
