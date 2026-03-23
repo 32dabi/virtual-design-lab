@@ -53,7 +53,7 @@ const GalleryTab = () => {
       <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gold/20">
         <button
           onClick={() => setRoomFilter('all')}
-          className={`px-3 py-1.5 rounded-full text-[11px] tracking-wider uppercase transition-all ${
+          className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-body tracking-wider uppercase transition-all ${
             roomFilter === 'all'
               ? 'bg-gold/15 text-gold border border-gold/40'
               : 'text-muted-foreground hover:text-gold border border-transparent'
@@ -65,7 +65,7 @@ const GalleryTab = () => {
           <button
             key={rt.id}
             onClick={() => setRoomFilter(rt.id)}
-            className={`px-3 py-1.5 rounded-full text-[11px] tracking-wider uppercase transition-all ${
+            className={`whitespace-nowrap px-3 py-1.5 rounded-full text-[11px] font-body tracking-wider uppercase transition-all ${
               roomFilter === rt.id
                 ? 'bg-gold/15 text-gold border border-gold/40'
                 : 'text-muted-foreground hover:text-gold border border-transparent'
