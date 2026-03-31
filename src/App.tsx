@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import GenerateImages from "./pages/GenerateImages";
 import SobreNos from "./pages/SobreNos";
+import Catalogo from "./pages/Catalogo";
 
 const queryClient = new QueryClient();
 
