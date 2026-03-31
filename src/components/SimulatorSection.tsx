@@ -14,7 +14,8 @@ const SimulatorSection = () => {
   const [activeTab, setActiveTab] = useState<TabId>('gallery');
 
   return (
-    <section id="simulador" className="py-20 px-6 max-w-7xl mx-auto">
+    <section id="simulador" className="w-full py-20 bg-foreground">
+      <div className="max-w-7xl mx-auto px-6">
       <div className="text-center mb-10">
         <div className="gold-line mx-auto mb-4" />
         <h2 className="text-3xl md:text-4xl font-heading font-semibold text-gold tracking-wider mb-2">
