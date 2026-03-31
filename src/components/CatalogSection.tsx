@@ -31,7 +31,8 @@ const CatalogSection = () => {
       : products.filter(p => p.category === active);
 
   return (
-    <section id="catalogo" className="py-20 px-6 max-w-7xl mx-auto bg-foreground">
+    <section id="catalogo" className="w-full py-20 bg-foreground">
+      <div className="max-w-7xl mx-auto px-6">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
@@ -64,6 +65,7 @@ const CatalogSection = () => {
       </div>
 
       <ProductModal product={selected} open={!!selected} onClose={() => setSelected(null)} />
+      </div>
     </section>
   );
 };
