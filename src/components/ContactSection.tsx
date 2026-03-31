@@ -3,7 +3,8 @@ import { MapPin, Phone, Instagram } from 'lucide-react';
 const ContactSection = () => {
   return (
     <section id="contato" className="py-20 px-6">
-      <div className="max-w-4xl mx-auto glass-card rounded-2xl p-8 md:p-12">
+      <div className="max-w-7xl mx-auto bg-card/40 border border-border rounded-2xl p-8 md:p-12">
+        <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <div className="gold-line mx-auto mb-4" />
           <h2 className="text-3xl md:text-4xl font-heading font-normal text-gold tracking-wider mb-2">Contato</h2>
@@ -31,6 +32,7 @@ const ContactSection = () => {
             <p className="text-sm text-foreground font-normal">@elevareconceito</p>
             <p className="text-xs text-muted-foreground">Instagram</p>
           </a>
+        </div>
         </div>
       </div>
 
