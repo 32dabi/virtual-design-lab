@@ -41,6 +41,7 @@ const ContactSection = () => {
           © 2026 <span className="font-heading tracking-widest">ELEVARE</span> — Cores e Formas. Todos os direitos reservados.
         </p>
       </div>
+      </div>
     </section>
   );
 };
