@@ -33,6 +33,7 @@ const ContactSection = () => {
             <p className="text-xs text-muted-foreground">Instagram</p>
           </a>
         </div>
+        </div>
       </div>
 
       {/* Footer */}
