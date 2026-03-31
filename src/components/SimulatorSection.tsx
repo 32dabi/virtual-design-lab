@@ -46,6 +46,7 @@ const SimulatorSection = () => {
 
       {/* Tab content */}
       {activeTab === 'gallery' ? <GalleryTab /> : <AISimulatorTab />}
+      </div>
     </section>
   );
 };
