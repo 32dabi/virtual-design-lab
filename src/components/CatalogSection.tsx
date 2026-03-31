@@ -65,6 +65,7 @@ const CatalogSection = () => {
       </div>
 
       <ProductModal product={selected} open={!!selected} onClose={() => setSelected(null)} />
+      </div>
     </section>
   );
 };
