@@ -58,7 +58,7 @@ const HeroSection = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-5 justify-center">
           <a
-            href="/catalogo"
+            href="#catalogo"
             className="px-12 py-4 border border-gold/60 text-gold font-medium tracking-wider uppercase text-base rounded hover:bg-gold/10 hover:border-gold transition-all flex items-center justify-center font-subtitle"
           >
             Ver Catálogo

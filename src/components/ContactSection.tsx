@@ -2,8 +2,7 @@ import { MapPin, Phone, Instagram } from 'lucide-react';
 
 const ContactSection = () => {
   return (
-    <section id="contato" className="w-full py-20 bg-foreground">
-      <div className="px-6">
+    <section id="contato" className="py-20 px-6">
       <div className="max-w-4xl mx-auto glass-card rounded-2xl p-8 md:p-12">
         <div className="text-center mb-10">
           <div className="gold-line mx-auto mb-4" />
@@ -40,7 +39,6 @@ const ContactSection = () => {
         <p className="text-xs text-muted-foreground tracking-wider">
           © 2026 <span className="font-heading tracking-widest">ELEVARE</span> — Cores e Formas. Todos os direitos reservados.
         </p>
-      </div>
       </div>
     </section>
   );
