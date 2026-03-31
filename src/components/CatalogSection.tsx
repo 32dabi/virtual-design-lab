@@ -31,7 +31,8 @@ const CatalogSection = () => {
       : products.filter(p => p.category === active);
 
   return (
-    <section id="catalogo" className="py-20 px-6 max-w-7xl mx-auto">
+    <section id="catalogo" className="py-20 px-6">
+      <div className="max-w-7xl mx-auto bg-card/40 border border-border rounded-2xl p-8 md:p-12">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="gold-line mx-auto mb-4" />
