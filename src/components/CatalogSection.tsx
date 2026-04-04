@@ -10,6 +10,7 @@ const categories: (ProductCategory | 'all' | 'perfis-acabamentos')[] = [
   'bamboo-carbon',
   'pvc-ceiling',
   'wpc-outdoor',
+  'deck',
   'perfis-acabamentos',
   'clips',
 ];
