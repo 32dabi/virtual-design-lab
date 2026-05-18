@@ -159,6 +159,7 @@ const HeroSection = () => {
         loop
         muted
         playsInline
+        preload="none"
         className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
       >
         <source src="/videos/hero-bg.mp4" type="video/mp4" />
