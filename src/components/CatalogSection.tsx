@@ -24,6 +24,7 @@ const filterLabels: Record<string, string> = {
 const CatalogSection = () => {
   const [active, setActive] = useState<string>('all');
   const [selected, setSelected] = useState<Product | null>(null);
+  const isCatalogEmpty = products.length === 0;
 
   const filtered = active === 'all'
     ? products
@@ -41,22 +42,23 @@ const CatalogSection = () => {
         <p className="text-muted-foreground mt-2">Explore nossa linha completa de revestimentos</p>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-8 justify-center">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setActive(cat)}
-            className={`px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 ${
-              active === cat
-                ? 'border border-gold bg-gold/15 text-gold'
-                : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
-            }`}
-          >
-            {filterLabels[cat] || cat}
-          </button>
-        ))}
-      </div>
+      {!isCatalogEmpty && (
+        <div className="flex flex-wrap gap-2 mb-8 justify-center">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActive(cat)}
+              className={`px-4 py-2 rounded-full text-xs font-normal tracking-wider uppercase transition-all duration-300 ${
+                active === cat
+                  ? 'border border-gold bg-gold/15 text-gold'
+                  : 'border border-foreground/20 text-foreground/60 hover:text-gold hover:border-gold/50'
+              }`}
+            >
+              {filterLabels[cat] || cat}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -64,6 +66,15 @@ const CatalogSection = () => {
           <ProductCard key={p.id} product={p} onClick={setSelected} />
         ))}
       </div>
+
+      {isCatalogEmpty && (
+        <div className="border border-gold/20 bg-secondary/40 rounded-2xl px-6 py-12 text-center">
+          <p className="text-gold uppercase tracking-widest text-sm font-normal">Catálogo em reconstrução</p>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Os novos materiais da Elevare serão adicionados aqui em breve.
+          </p>
+        </div>
+      )}
 
         <ProductModal product={selected} open={!!selected} onClose={() => setSelected(null)} />
       </div>
