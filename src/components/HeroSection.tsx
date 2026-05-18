@@ -154,6 +154,16 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full"
         style={{ background: '#0B3D2E' }}
       />
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
+      >
+        <source src="/videos/hero-bg.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/80 pointer-events-none" />
 
       <div className="relative z-10 text-center px-6">
         <div className="gold-line mx-auto mb-8" />
