@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { LayoutGrid, Camera } from 'lucide-react';
 import GalleryTab from './GalleryTab';
-import AISimulatorTab from './AISimulatorTab';
+
+const AISimulatorTab = lazy(() => import('./AISimulatorTab'));
 
 const tabs = [
   { id: 'gallery', label: 'Galeria de Ambientes', icon: LayoutGrid },
@@ -44,7 +45,13 @@ const SimulatorSection = () => {
       </div>
 
       {/* Tab content */}
-      {activeTab === 'gallery' ? <GalleryTab /> : <AISimulatorTab />}
+      {activeTab === 'gallery' ? (
+        <GalleryTab />
+      ) : (
+        <Suspense fallback={null}>
+          <AISimulatorTab />
+        </Suspense>
+      )}
     </section>
   );
 };
