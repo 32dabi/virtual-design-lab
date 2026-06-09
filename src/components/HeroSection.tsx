@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Particle {
   x: number;
@@ -14,6 +14,12 @@ const HeroSection = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const animRef = useRef<number>(0);
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowVideo(true), 900);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -154,16 +160,18 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full"
         style={{ background: '#0B3D2E' }}
       />
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="none"
-        className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
-      >
-        <source src="/videos/hero-bg.mp4" type="video/mp4" />
-      </video>
+      {showVideo && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-screen pointer-events-none"
+        >
+          <source src="/videos/hero-bg.mp4" type="video/mp4" />
+        </video>
+      )}
       <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/80 pointer-events-none" />
 
       <div className="relative z-10 text-center px-6">
