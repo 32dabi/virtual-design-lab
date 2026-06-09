@@ -1,18 +1,22 @@
+import { lazy, Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import CatalogSection from '@/components/CatalogSection';
-import SimulatorSection from '@/components/SimulatorSection';
-import ContactSection from '@/components/ContactSection';
 import WhatsAppButton from '@/components/WhatsAppButton';
+
+const CatalogSection = lazy(() => import('@/components/CatalogSection'));
+const SimulatorSection = lazy(() => import('@/components/SimulatorSection'));
+const ContactSection = lazy(() => import('@/components/ContactSection'));
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <HeroSection />
-      <CatalogSection />
-      <SimulatorSection />
-      <ContactSection />
+      <Suspense fallback={null}>
+        <CatalogSection />
+        <SimulatorSection />
+        <ContactSection />
+      </Suspense>
       <WhatsAppButton />
     </div>
   );
